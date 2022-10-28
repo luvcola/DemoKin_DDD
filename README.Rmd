@@ -11,9 +11,11 @@ output:
 bibliography: kinship.bib
 ---
 
+<img src="DemoKin-Logo.png" align="right" width="200" />
+
 # 1. Installation
 
-Install the development version from GitHub. We made changes to the `DemoKin` package ahead of this workshop If you had already installed the package, please uninstall it and and install it again.
+Install the development version from GitHub (could take ~1 minute). We made changes to the `DemoKin` package ahead of this workshop If you had already installed the package, please uninstall it and and install it again.
 
 ```{r, eval=FALSE}
 # remove.packages("DemoKin")
@@ -21,9 +23,9 @@ Install the development version from GitHub. We made changes to the `DemoKin` pa
 devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)
 ```
 
-Loas packages: 
+Load packages: 
 
-```{r}
+```{r, warning=F, message=FALSE}
 library(DemoKin)
 library(dplyr)
 library(tidyr)
@@ -43,9 +45,7 @@ data(package="DemoKin")$results[ , 3:4] %>%
   data.frame() 
 ```
 
-In this tutorial, we will use the data for Sweden. 
-
-### `swe_surv` matrix; survival ratio by age (DemoKin's *U* argument)
+### `swe_px` matrix; survival probabilities by age (DemoKin's *U* argument)
 
 This is what the data looks like:
 
@@ -62,7 +62,7 @@ image.plot(
   , y = 0:nrow(swe_px)
   , z = t(as.matrix(swe_px))
   , xlab = "Year"
-  , ylab = "Survival ratio (U)"
+  , ylab = "Survival probability"
   )
 ```
 
@@ -88,7 +88,7 @@ image.plot(
 
 # 3. The function `kin()`
 
-`DemoKin::kin()` currently does most of the heavy lifting in terms of implementing matrix kinship models. 
+`DemoKin` can be used to compute the number and age distribution of Focal's relatives under a range of assumptions, including living and deceased kin. The function `DemoKin::kin()` currently does most of the heavy lifting in terms of implementing matrix kinship models. 
 This is what it looks like in action, in this case assuming time-invariant demographic rates:
 
 ```{r}
@@ -127,7 +127,7 @@ str(swe_2015)
 
 ### `kin_full` 
 
-This data frame contains expected kin counts by year (or cohort), age of Focal and age of kin. 
+This data frame contains expected kin counts by year (or cohort in case `time_invariant` = FALSE), age of Focal and age of kin. 
 
 ```{r}
 head(swe_2015$kin_full)
@@ -138,7 +138,7 @@ head(swe_2015$kin_full)
 This is a 'summary' data frame derived from `kin_full`. To produce it, we sum over all ages of kin to produce a data frame of expected kin counts by year or cohort and age of Focal (but *not* by age of kin). 
 This is how the `kin_summary` object is derived:
 
-```{r}
+```{r, message=F}
 kin_by_age_focal <- 
   swe_2015$kin_full %>% 
   group_by(cohort, kin, age_focal) %>% 
@@ -164,10 +164,9 @@ We then ask:
 
 > How can we characterize the kinship network of an average member of the population (call her 'Focal')?
 
-For this exercise, we'll use the Swedish data pre-loaded with `DemoKin`.
+For this exercise, we'll use the Swedish data pre-loaded.
 
 ```{r}
-library(DemoKin)
 # First, get vectors for a given year
 swe_surv_2015 <- DemoKin::swe_px[,"1950"]
 swe_asfr_2015 <- DemoKin::swe_asfr[,"1950"]
@@ -177,7 +176,7 @@ swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 
 ## 'Keyfitz' kinship diagram
 
-We can visualize the implied kin counts for a Focal woman aged 35 yo in a time-invariant population using a network or 'Keyfitz' kinship diagram [@Keyfitz2005] using the `plot_diagram` function:
+We can visualize the implied kin counts for a Focal woman aged 35 yo in a time-invariant population using a network or 'Keyfitz' kinship diagram [@Keyfitz2005] with the `plot_diagram` function:
 
 ```{r, fig.height=10, fig.width=12}
 swe_2015$kin_summary %>% 
@@ -187,7 +186,6 @@ swe_2015$kin_summary %>%
 ```
 
 ## Expected kin counts for a Focal person surviving to each age
-
 
 Now, let's visualize how the expected number of daughters, siblings, cousins, etc., changes over the lifecourse of Focal (now, with full names to identify each relative type using the function `DemoKin::rename_kin()`).
 
@@ -201,6 +199,8 @@ swe_2015$kin_summary %>%
   labs(x = "Focal's age") +
   facet_wrap(~kin)
 ```
+
+> Note: we are working in a time invariant framework. In that sense it´s like life expectancy definition: expected years of life from a synthetic cohort that experience observed mortality during some year.
 
 ### Family size
 
@@ -239,7 +239,7 @@ swe_2015$kin_summary %>%
 
 ## Age distribution of relatives
 
-How old are Focal's relatives? Using the `kin_full` data frame, we can visualize the age distribution of Focal's relatives throughout Focal's life. 
+How old are Focal's relatives? Using the `kin_full` data frame, we can visualize the age distribution of Focal's relatives throughout Focal's life. For example when Focal is 35, what are the ages of her relatives:
 
 
 ```{r, fig.height=6, fig.width=8}
@@ -252,6 +252,7 @@ geom_vline(xintercept = 35, color=2) +
 labs(y = "Expected number of living relatives") +
 theme_bw() +
 facet_wrap(~kin)
+
 ```
 
 We can also pick three points of Focal's life: when she's born (age=0) at the end of her reproductive life (age=50) and when she retires (age=65).
@@ -294,12 +295,29 @@ sda <-
 print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
 ```
 
+Finally, let´s visualize the living kin by type and mean age during Ego´s life course:
+
+```{r}
+ggplot(swe_2015$kin_full %>% 
+        group_by(age_focal, kin) %>% 
+        summarise(count = sum(living),
+                  mean_age = sum(living*age_kin, na.rm=T)/sum(living)), 
+       aes(age_focal,mean_age)) + 
+  geom_point(aes(size=count,color=kin)) +
+  geom_line(aes(color=kin)) +
+  scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
+  labs(color="Relative",size="Living")+
+  theme_light()+ coord_fixed()
+```
+
 ## Deceased kin
 
-We have focused on living kin, but what about relatives who have died? 
-The output of `kin` also includes information of kin deaths experienced by an average Focal.
+We have focused on living kin, but what about relatives who have died during her life? 
+The output of `kin` also includes information of kin deaths experienced by Focal.
 
-We start by considering the number of kin deaths that an average can expect to experience at each age. In other words, the non-cumulative number of deaths in the family that Focal experiences at a given age.  
+We start by considering the number of kin deaths that can expect to experience at each age. In other words, the non-cumulative number of deaths in the family that Focal experiences at a given age.  
 
 ```{r}
 loss1 <- 
@@ -374,13 +392,13 @@ swe_2015$kin_summary %>%
 
 # 5. Vignette and extensions
 
-For more details, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = T)`.
+For more details, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
 
 # 6. Exercises
 
 ## Exercise 1. Age of kin
 
-The output of `DemoKin::kin` includes information on the age of Focal's relatives (in the columns `kin_summary$mean_age` and `kin_summary$$sd_age`). For example, this allows us to determine the age of Focal's cousins over the lifecourse of Focal: 
+The output of `DemoKin::kin` includes information on the age of Focal's relatives (in the columns `kin_summary$mean_age` and `kin_summary$$sd_age`). For example, this allows us to determine the age of Focal's sisters over the lifecourse of Focal: 
 
 ```{r}
 
