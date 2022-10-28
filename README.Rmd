@@ -40,18 +40,14 @@ library(fields)
 The `DemoKin` package includes data from Sweden as an example. 
 The data comes from the [Human Mortality Database](https://www.mortality.org/) and [Human Fertility Database](https://www.humanfertility.org/). 
 These datasets were loaded using the`DemoKin::get_HMDHFD` function.
-This is the Swedish data we will be using:
-
-```{r}
-data(package="DemoKin")$results[10:13 , 3:4] %>% 
-  data.frame() 
-```
 
 ### `swe_px` matrix; survival probabilities by age (DemoKin's *U* argument)
 
 This is what the data looks like:
 
 ```{r}
+data("swe_px", package="DemoKin")
+
 swe_px[1:4, 1:4]
 ```
 
@@ -73,6 +69,8 @@ image.plot(
 This is what the data looks like:
 
 ```{r}
+data("swe_asfr", package="DemoKin")
+
 swe_asfr[15:20, 1:4]
 ```
 
@@ -166,12 +164,12 @@ We then ask:
 
 > How can we characterize the kinship network of an average member of the population (call her 'Focal')?
 
-For this exercise, we'll use the Swedish data pre-loaded.
+For this exercise, we'll use the pre-loaded Swedish data.
 
 ```{r}
 # First, get vectors for a given year
-swe_surv_2015 <- DemoKin::swe_px[,"1950"]
-swe_asfr_2015 <- DemoKin::swe_asfr[,"1950"]
+swe_surv_2015 <- DemoKin::swe_px[,"2015"]
+swe_asfr_2015 <- DemoKin::swe_asfr[,"2015"]
 # Run kinship models
 swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 ```
@@ -355,6 +353,8 @@ For more details, including an extension to time varying-populations rates, dece
 
 # 6. Exercises
 
+**For all exercises, assume time-invariant rates at the 2010 levels in Sweden and a female-only population. All exercises can be completed using datasets included in DemoKin.**
+
 ## Exercise 1. Age of kin
 
 The output of `DemoKin::kin` includes information on the age of Focal's relatives (in the columns `kin_summary$mean_age` and `kin_summary$$sd_age`). For example, this allows us to determine the age of Focal's sisters over the lifecourse of Focal: 
@@ -437,8 +437,6 @@ swe_x$kin_full %>%
   labs(y = "Age of sister") +
   theme_bw()
 ```
-
-For all exercises, assume time-invariant rates at the 2010 levels in Sweden and a female-only population. All exercises can be completed using datasets included in DemoKin.
 
 ## Exercise 2. Living mother
 

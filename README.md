@@ -43,25 +43,15 @@ library(fields)
 The `DemoKin` package includes data from Sweden as an example. The data
 comes from the [Human Mortality Database](https://www.mortality.org/)
 and [Human Fertility Database](https://www.humanfertility.org/). These
-datasets were loaded using the`DemoKin::get_HMDHFD` function. This is
-the Swedish data we will be using:
-
-``` r
-data(package="DemoKin")$results[10:13 , 3:4] %>% 
-  data.frame() 
-```
-
-    ##       Item                                                   Title
-    ## 1 swe_asfr  Swedish age-specific fertility rates from 1900 to 2015
-    ## 2  swe_pop             Female swedish population from 1900 to 2015
-    ## 3   swe_px Female swedish survival probabilities from 1900 to 2015
-    ## 4 swe_surv
+datasets were loaded using the`DemoKin::get_HMDHFD` function.
 
 ### `swe_px` matrix; survival probabilities by age (DemoKin’s *U* argument)
 
 This is what the data looks like:
 
 ``` r
+data("swe_px", package="DemoKin")
+
 swe_px[1:4, 1:4]
 ```
 
@@ -83,13 +73,15 @@ image.plot(
   )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ### `swe_asfr` matrix; age specific fertility rate (DemoKin’s *f* argument)
 
 This is what the data looks like:
 
 ``` r
+data("swe_asfr", package="DemoKin")
+
 swe_asfr[15:20, 1:4]
 ```
 
@@ -113,7 +105,7 @@ image.plot(
   )
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 # 3\. The function `kin()`
 
@@ -256,12 +248,12 @@ each age throughout their life. We then ask:
 > How can we characterize the kinship network of an average member of
 > the population (call her ‘Focal’)?
 
-For this exercise, we’ll use the Swedish data pre-loaded.
+For this exercise, we’ll use the pre-loaded Swedish data.
 
 ``` r
 # First, get vectors for a given year
-swe_surv_2015 <- DemoKin::swe_px[,"1950"]
-swe_asfr_2015 <- DemoKin::swe_asfr[,"1950"]
+swe_surv_2015 <- DemoKin::swe_px[,"2015"]
+swe_asfr_2015 <- DemoKin::swe_asfr[,"2015"]
 # Run kinship models
 swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 ```
@@ -279,7 +271,7 @@ swe_2015$kin_summary %>%
   plot_diagram(rounding = 2)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ## Expected kin counts for a Focal person surviving to each age
 
@@ -299,7 +291,7 @@ swe_2015$kin_summary %>%
   facet_wrap(~kin)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 > Note: we are working in a time invariant framework. You can think if
 > the results as analogous to life expectancy: expected years of life
@@ -329,7 +321,7 @@ swe_2015$kin_summary %>%
   theme(legend.position = "bottom")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ## Age distribution of relatives
 
@@ -349,7 +341,7 @@ theme_bw() +
 facet_wrap(~kin)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 The output of the `DemoKin::kin()` function can also be used to easily
 determine the mean age Focal’s relatives by kin type. For simplicity,
@@ -377,7 +369,7 @@ sda <-
 print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
 ```
 
-    ## [1] "The mother of a 35-yo Focal woman in our time-invariant population is, on average, 61.8 years old, with a standard deviation of 5.9 years."
+    ## [1] "The mother of a 35-yo Focal woman in our time-invariant population is, on average, 65.4 years old, with a standard deviation of 5.1 years."
 
 Finally, let´s visualize the living kin by type and mean age during
 Ego’s life course:
@@ -405,11 +397,11 @@ swe_2015$kin_full %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-    ## Warning: Removed 81 rows containing missing values (geom_point).
+    ## Warning: Removed 87 rows containing missing values (geom_point).
 
-    ## Warning: Removed 81 row(s) containing missing values (geom_path).
+    ## Warning: Removed 87 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ## Deceased kin
 
@@ -447,7 +439,7 @@ swe_2015$kin_summary %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 ### Cumulative number of kin deaths
 
@@ -478,10 +470,10 @@ swe_2015$kin_summary %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 A member of the population aged 15, 50, and 65yo will have experienced,
-on average, the death of 0.6, 2.6, 3.8 relatives, respectively. We can
+on average, the death of 0.5, 1.9, 2.9 relatives, respectively. We can
 decompose this by relative type:
 
 # 5\. Vignette and extensions
@@ -493,6 +485,10 @@ install the package as `devtools::install_github("IvanWilli/DemoKin",
 build_vignettes = TRUE)`.
 
 # 6\. Exercises
+
+**For all exercises, assume time-invariant rates at the 2010 levels in
+Sweden and a female-only population. All exercises can be completed
+using datasets included in DemoKin.**
 
 ## Exercise 1. Age of kin
 
@@ -516,7 +512,7 @@ swe_2015$kin_summary %>%
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 **Instructions**
 
@@ -568,7 +564,7 @@ swe_x$kin_full %>%
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 Second, get ages of all sisters, irrespective of whether they are older
 or younger:
@@ -591,11 +587,7 @@ swe_x$kin_full %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
-
-For all exercises, assume time-invariant rates at the 2010 levels in
-Sweden and a female-only population. All exercises can be completed
-using datasets included in DemoKin.
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
 
 ## Exercise 2. Living mother
 
@@ -634,7 +626,7 @@ swe_x$kin_summary %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 ``` r
 swe_x$kin_summary$count_living[71]
@@ -736,7 +728,7 @@ data.frame(age_focal = ages, y = S) %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ## References
 
