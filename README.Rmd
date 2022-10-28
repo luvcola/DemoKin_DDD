@@ -26,7 +26,7 @@ Loas packages:
 ```{r}
 library(DemoKin)
 library(dplyr)
-library(knitr)
+library(tidyr)
 library(ggplot2)
 library(fields)
 ```
@@ -40,8 +40,7 @@ To list the data:
 
 ```{r}
 data(package="DemoKin")$results[ , 3:4] %>% 
-  data.frame() %>% 
-  kable()
+  data.frame() 
 ```
 
 In this tutorial, we will use the data for Sweden. 
@@ -377,19 +376,31 @@ swe_2015$kin_summary %>%
 
 ## Exercise 1. Age of kin
 
-How old are, on average, Focal's sisters over the lifecourse of Focal? 
+The output of `DemoKin::kin` includes information on the age of relatives in the the columns `kin_summary$mean_age` and `kin_summary$$sd_age`. For example, this allows us to determine the age of Focal's cousins over the lifecourse of Focal? 
+
+```{r}
+
+swe_2015$kin_summary %>%  
+  filter(kin %in% c("os", "ys")) %>% 
+  rename_kin() %>% 
+  select(kin, age_focal, mean_age, sd_age) %>% 
+  pivot_longer(mean_age:sd_age) %>% 
+  ggplot(aes(x = age_focal, y = value, colour = kin)) +
+  geom_line() +
+  facet_wrap(~name, scales = "free") +
+  labs(y = "Age of sister") +
+  theme_bw()
+```
 
 **Instructions**
 
-Plot the mean and SD of the age of Focal's sisters over the ages of Focal. Plot separately (1) for younger and older sisters, (2) and for all sisters. 
+Compute the the mean and SD of the age of Focal's sisters over the ages of Focal **by hand** (i.e., using the raw output in `kin_full`). Plot separately (1) for younger and older sisters, (2) and for all sisters. 
 
 **Solution**
 
 First, get mean and SD of ages of sisters distinguishing between younger and older sisters:
 
 ```{r}
-library(tidyr)
-
 # First, get vectors for a given year
 swe_surv_x <- DemoKin::swe_px[,"2010"]
 swe_asfr_x <- DemoKin::swe_asfr[,"2010"]

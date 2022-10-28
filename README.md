@@ -48,12 +48,7 @@ library(dplyr)
     ##     intersect, setdiff, setequal, union
 
 ``` r
-library(knitr)
-```
-
-    ## Warning: package 'knitr' was built under R version 4.0.4
-
-``` r
+library(tidyr)
 library(ggplot2)
 ```
 
@@ -101,25 +96,37 @@ the data:
 
 ``` r
 data(package="DemoKin")$results[ , 3:4] %>% 
-  data.frame() %>% 
-  kable()
+  data.frame() 
 ```
 
-| Item                      | Title                                                                                                                     |
-| :------------------------ | :------------------------------------------------------------------------------------------------------------------------ |
-| U\_caswell\_2021          | Historic and projected survival ratios from Sweden used in Caswell (2021)                                                 |
-| f\_caswell\_2021          | Historic and projected fertility ratios from Sweden used in Caswell (2021)                                                |
-| kin\_svk1990\_caswell2020 | Output for Slovakia 1990 in Caswell (2020).                                                                               |
-| pi\_caswell\_2021         | Historic and projected mother´s age distribution of childbearing from Sweden used in Caswell (2021)                       |
-| svk\_Hxs                  | Age where assign offspring of individuals in each partity stage (Caswell, 2021). All to zero age in this case.            |
-| svk\_Uxs                  | Probability of transition among parity stage for Slovakia in 1990, for each age, conditional on survival (Caswell, 2021). |
-| svk\_fxs                  | Female Slovakian fertility rates by parity stage in 1990 (Caswell, 2021)                                                  |
-| svk\_pxs                  | Female Slovakian survival probabilities by parity stage in 1990 (Caswell, 2021)                                           |
-| swe\_Sx                   | Female swedish survival ratios from 1900 to 2015                                                                          |
-| swe\_asfr                 | Swedish age-specific fertility rates from 1900 to 2015                                                                    |
-| swe\_pop                  | Female swedish population from 1900 to 2015                                                                               |
-| swe\_px                   | Female swedish survival probabilities from 1900 to 2015                                                                   |
-| swe\_surv                 |                                                                                                                           |
+    ##                       Item
+    ## 1           U_caswell_2021
+    ## 2           f_caswell_2021
+    ## 3  kin_svk1990_caswell2020
+    ## 4          pi_caswell_2021
+    ## 5                  svk_Hxs
+    ## 6                  svk_Uxs
+    ## 7                  svk_fxs
+    ## 8                  svk_pxs
+    ## 9                   swe_Sx
+    ## 10                swe_asfr
+    ## 11                 swe_pop
+    ## 12                  swe_px
+    ## 13                swe_surv
+    ##                                                                                                                        Title
+    ## 1                                                  Historic and projected survival ratios from Sweden used in Caswell (2021)
+    ## 2                                                 Historic and projected fertility ratios from Sweden used in Caswell (2021)
+    ## 3                                                                                Output for Slovakia 1990 in Caswell (2020).
+    ## 4                        Historic and projected mother´s age distribution of childbearing from Sweden used in Caswell (2021)
+    ## 5             Age where assign offspring of individuals in each partity stage (Caswell, 2021). All to zero age in this case.
+    ## 6  Probability of transition among parity stage for Slovakia in 1990, for each age, conditional on survival (Caswell, 2021).
+    ## 7                                                   Female Slovakian fertility rates by parity stage in 1990 (Caswell, 2021)
+    ## 8                                            Female Slovakian survival probabilities by parity stage in 1990 (Caswell, 2021)
+    ## 9                                                                           Female swedish survival ratios from 1900 to 2015
+    ## 10                                                                    Swedish age-specific fertility rates from 1900 to 2015
+    ## 11                                                                               Female swedish population from 1900 to 2015
+    ## 12                                                                   Female swedish survival probabilities from 1900 to 2015
+    ## 13
 
 In this tutorial, we will use the data for Sweden.
 
@@ -577,13 +584,33 @@ swe_2015$kin_summary %>%
 
 ## Exercise 1. Age of kin
 
-How old are, on average, Focal’s sisters over the lifecourse of Focal?
+The output of `DemoKin::kin` includes information on the age of
+relatives in the the columns `kin_summary$mean_age` and
+`kin_summary$$sd_age`. For example, this allows us to determine the age
+of Focal’s cousins over the lifecourse of Focal?
+
+``` r
+swe_2015$kin_summary %>%  
+  filter(kin %in% c("os", "ys")) %>% 
+  rename_kin() %>% 
+  select(kin, age_focal, mean_age, sd_age) %>% 
+  pivot_longer(mean_age:sd_age) %>% 
+  ggplot(aes(x = age_focal, y = value, colour = kin)) +
+  geom_line() +
+  facet_wrap(~name, scales = "free") +
+  labs(y = "Age of sister") +
+  theme_bw()
+```
+
+    ## Warning: Removed 1 row(s) containing missing values (geom_path).
+
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
 **Instructions**
 
-Plot the mean and SD of the age of Focal’s sisters over the ages of
-Focal. Plot separately (1) for younger and older sisters, (2) and for
-all sisters.
+Compute the the mean and SD of the age of Focal’s sisters over the ages
+of Focal **by hand** (i.e., using the raw output in `kin_full`). Plot
+separately (1) for younger and older sisters, (2) and for all sisters.
 
 **Solution**
 
@@ -591,8 +618,6 @@ First, get mean and SD of ages of sisters distinguishing between younger
 and older sisters:
 
 ``` r
-library(tidyr)
-
 # First, get vectors for a given year
 swe_surv_x <- DemoKin::swe_px[,"2010"]
 swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
@@ -631,7 +656,7 @@ swe_x$kin_full %>%
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 Second, get ages of all sisters, irrespective of whether they are older
 or younger:
@@ -654,7 +679,7 @@ swe_x$kin_full %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 For all exercises, assume time-invariant rates at the 2010 levels in
 Sweden and a female-only population. All exercises can be completed
@@ -692,7 +717,7 @@ swe_x$kin_summary %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
 
 ``` r
 swe_x$kin_summary$count_living[71]
@@ -773,7 +798,7 @@ data.frame(age_focal = ages, y = S) %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ## References
 
