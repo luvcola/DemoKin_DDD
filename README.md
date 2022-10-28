@@ -575,11 +575,94 @@ swe_2015$kin_summary %>%
 
 # 4\. Exercises
 
+## Exercise 1. Age of kin
+
+How old are, on average, Focal’s sisters over the lifecourse of Focal?
+
+**Instructions**
+
+Plot the mean and SD of the age of Focal’s sisters over the ages of
+Focal. Plot separately (1) for younger and older sisters, (2) and for
+all sisters.
+
+**Solution**
+
+First, get mean and SD of ages of sisters distinguishing between younger
+and older sisters:
+
+``` r
+library(tidyr)
+
+# First, get vectors for a given year
+swe_surv_x <- DemoKin::swe_px[,"2010"]
+swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
+# Run kinship models
+swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = "m")
+
+# For plotting
+dummy <- data.frame(
+      age_focal = 0:100
+      , name = "mean"
+      , value = 0:100
+      , kin = "os"
+      )
+
+# Younger and older sister separately
+swe_x$kin_full %>% 
+  rename_kin() %>% 
+  group_by(age_focal, kin) %>% 
+  summarise(
+    mean = sum(0:100*living)/sum(living)
+    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
+  ) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = mean:sd) %>% 
+  ggplot(aes(x = age_focal, y = value, colour = kin)) +
+  geom_line() +
+  geom_line(data = dummy, colour = "black", linetype = "dashed") +
+  # geom_abline(slope = 1, linetype = "dashed") +
+  facet_wrap(~name, scales = "free") +
+  labs(y = "Age of sister") +
+  theme_bw()
+```
+
+    ## `summarise()` has grouped output by 'age_focal'. You can override using the
+    ## `.groups` argument.
+
+    ## Warning: Removed 12 row(s) containing missing values (geom_path).
+
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+Second, get ages of all sisters, irrespective of whether they are older
+or younger:
+
+``` r
+# All sister together
+swe_x$kin_full %>% 
+  group_by(age_focal) %>% 
+  summarise(
+    mean = sum(0:100*living)/sum(living)
+    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
+  ) %>% 
+  ungroup() %>% 
+  pivot_longer(cols = mean:sd) %>% 
+  ggplot(aes(x = age_focal, y = value)) +
+  geom_line() +
+    geom_line(data = dummy, colour = "red", linetype = "dashed") +
+  facet_wrap(~name, scales = "free") +
+  labs(y = "Age of sister") +
+  theme_bw()
+```
+
+    ## Warning: Removed 12 row(s) containing missing values (geom_path).
+
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
 For all exercises, assume time-invariant rates at the 2010 levels in
 Sweden and a female-only population. All exercises can be completed
 using datasets included in DemoKin.
 
-## Exercise 1. Living mother
+## Exercise 2. Living mother
 
 What is the probability that Focal (an average Swedish woman) has a
 living mother over Focal’s live?
@@ -611,7 +694,7 @@ swe_x$kin_summary %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 swe_x$kin_summary$count_living[71]
@@ -619,7 +702,7 @@ swe_x$kin_summary$count_living[71]
 
     ## [1] 0.0538275
 
-## Exercise 2. Sandwich Generation
+## Exercise 3. Sandwich Generation
 
 The ‘Sandwich Generation’ refers to persons who are squeezed between
 frail older parents and young dependent children and are assumed to have
@@ -689,83 +772,6 @@ data.frame(age_focal = ages, y = S) %>%
   geom_line() +
   geom_vline(xintercept = max_S, colour = "red") +
   labs(x = "Focal's age", y = "Probability of Sandwich S(a)") +
-  theme_bw()
-```
-
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
-
-## Exercise 3. Age of kin
-
-How old are, on average, Focal’s sisters over the lifecourse of Focal?
-
-**Instructions**
-
-Plot the mean and SD of the age of Focal’s sisters over the ages of
-Focal. Plot separately (1) for younger and older sisters, (2) and for
-all sisters.
-
-**Solution**
-
-First, get mean and SD of ages of sisters distinguishing between younger
-and older sisters:
-
-``` r
-library(tidyr)
-# Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = c("os", "ys"))
-
-# For plotting
-dummy <- data.frame(
-      age_focal = 0:100
-      , name = "mean"
-      , value = 0:100
-      , kin = "os"
-      )
-
-# Younger and older sister separately
-swe_x$kin_full %>% 
-  rename_kin() %>% 
-  group_by(age_focal, kin) %>% 
-  summarise(
-    mean = sum(0:100*living)/sum(living)
-    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
-  ) %>% 
-  ungroup() %>% 
-  pivot_longer(cols = mean:sd) %>% 
-  ggplot(aes(x = age_focal, y = value, colour = kin)) +
-  geom_line() +
-  geom_line(data = dummy, colour = "black", linetype = "dashed") +
-  # geom_abline(slope = 1, linetype = "dashed") +
-  facet_wrap(~name, scales = "free") +
-  labs(y = "Age of sister") +
-  theme_bw()
-```
-
-    ## `summarise()` has grouped output by 'age_focal'. You can override using the
-    ## `.groups` argument.
-
-    ## Warning: Removed 1 row(s) containing missing values (geom_path).
-
-![](README_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
-
-Second, get ages of all sisters, irrespective of whether they are older
-or younger:
-
-``` r
-# All sister together
-swe_x$kin_full %>% 
-  group_by(age_focal) %>% 
-  summarise(
-    mean = sum(0:100*living)/sum(living)
-    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
-  ) %>% 
-  ungroup() %>% 
-  pivot_longer(cols = mean:sd) %>% 
-  ggplot(aes(x = age_focal, y = value)) +
-  geom_line() +
-    geom_line(data = dummy, colour = "red", linetype = "dashed") +
-  facet_wrap(~name, scales = "free") +
-  labs(y = "Age of sister") +
   theme_bw()
 ```
 
