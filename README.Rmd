@@ -1,17 +1,19 @@
 ---
 title: "Getting started with matrix kinship models in R using DemoKin"
 author: |
-  | Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research)
-date: 'Workshop ''The Formal Demography of Kinship: Theory and Application'' - Dutch
-  Demography Day; Nov 16 2022'
+  | Instructor: Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research)
+date: "Workshop 'The Formal Demography of Kinship: Theory and Application' - Dutch Demography Day; Nov 16 2022"
 output:
   github_document:
+    pandoc_args: --webtex
     toc: true
     toc_depth: 1
 bibliography: kinship.bib
 ---
 
 <img src="DemoKin-Logo.png" align="right" width="200" />
+
+
 
 # 1. Installation
 
@@ -38,10 +40,10 @@ library(fields)
 The `DemoKin` package includes data from Sweden as an example. 
 The data comes from the [Human Mortality Database](https://www.mortality.org/) and [Human Fertility Database](https://www.humanfertility.org/). 
 These datasets were loaded using the`DemoKin::get_HMDHFD` function.
-To list the data:
+This is the Swedish data we will be using:
 
 ```{r}
-data(package="DemoKin")$results[ , 3:4] %>% 
+data(package="DemoKin")$results[10:13 , 3:4] %>% 
   data.frame() 
 ```
 
@@ -200,7 +202,7 @@ swe_2015$kin_summary %>%
   facet_wrap(~kin)
 ```
 
-> Note: we are working in a time invariant framework. In that sense it´s like life expectancy definition: expected years of life from a synthetic cohort that experience observed mortality during some year.
+> Note: we are working in a time invariant framework. You can think if the results as analogous to life expectancy: expected years of life for a synthetic cohort experiencing observed period mortality rates.
 
 ### Family size
 
@@ -212,18 +214,6 @@ counts <-
   group_by(age_focal) %>% 
   summarise(count = sum(count_living)) %>% 
   ungroup()
-
-counts %>% 
-  ggplot() +
-  geom_line(aes(age_focal, count), size = 1)  +
-  coord_cartesian(ylim = c(0, 6)) +
-  theme_bw() +
-  labs(x = "Focal's age", y = "Number of living female relatives")
-```
-
-We can decompose this by relative type:
-
-```{r, fig.height=6, fig.width=8}
 
 swe_2015$kin_summary %>%
   select(age_focal, kin, count_living) %>% 
@@ -255,22 +245,6 @@ facet_wrap(~kin)
 
 ```
 
-We can also pick three points of Focal's life: when she's born (age=0) at the end of her reproductive life (age=50) and when she retires (age=65).
-
-```{r, fig.height=6, fig.width=8}
-swe_2015$kin_full %>%
-  filter(age_focal %in% c(0, 50, 65)) %>% 
-  filter(kin %in% c("m", "d", "os", "ys")) %>%
-  mutate(age_focal = as.character(age_focal)) %>% 
-  rename_kin() %>% 
-  ggplot() +
-  geom_line(aes(x = age_kin, y = living, colour = age_focal), size = 1) +
-  scale_color_discrete("Focal's age") +
-  labs(x = "Age of Focal's kin", y = "Age distribution") +
-  theme_bw() +
-  facet_wrap(~kin)
-```
-
 The output of the `DemoKin::kin()` function can also be used to easily determine the mean age Focal's relatives by kin type. 
 For simplicity, let's focus on a Focal aged 35 yo and get the mean age (and standard deviation) of her relatives in our time-invariant population. 
 
@@ -295,21 +269,26 @@ sda <-
 print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
 ```
 
-Finally, let´s visualize the living kin by type and mean age during Ego´s life course:
+Finally, let´s visualize the living kin by type and mean age during Ego's life course:
 
 ```{r}
-ggplot(swe_2015$kin_full %>% 
-        group_by(age_focal, kin) %>% 
-        summarise(count = sum(living),
-                  mean_age = sum(living*age_kin, na.rm=T)/sum(living)), 
-       aes(age_focal,mean_age)) + 
+swe_2015$kin_full %>%
+  filter(kin %in% c("m", "gm", "d", "gd")) %>%
+  rename_kin() %>% 
+  group_by(age_focal, kin) %>% 
+  summarise(
+    count = sum(living)
+    , mean_age = sum(living * age_kin, na.rm=T)/sum(living)
+    ) %>% 
+  ggplot(aes(age_focal,mean_age)) + 
   geom_point(aes(size=count,color=kin)) +
   geom_line(aes(color=kin)) +
   scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
   scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
   geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
   labs(color="Relative",size="Living")+
-  theme_light()+ coord_fixed()
+  coord_fixed() +
+  theme_bw()
 ```
 
 ## Deceased kin
@@ -327,18 +306,6 @@ loss1 <-
   summarise(count = sum(count_dead)) %>% 
   ungroup()
 
-loss1 %>% 
-  ggplot() +
-  geom_line(aes(age_focal, count), size = 1)  +
-  labs(x = "Focal's age", y = "Number of kin deaths experienced (non-cumulative)") +
-  coord_cartesian(ylim = c(0, 0.086)) +
-  theme_bw()
-```
-
-How are these deaths distributed by type of relative? 
-We can decompose this by kin type:
-
-```{r}
 swe_2015$kin_summary %>%
   filter(age_focal>0) %>%
   group_by(age_focal, kin) %>% 
@@ -365,18 +332,7 @@ loss2 <-
   summarise(count = sum(count_cum_dead)) %>% 
   ungroup()
 
-loss2 %>% 
-  ggplot() +
-  geom_line(aes(age_focal, count), size = 1)  +
-  labs(x = "Focal's age", y = "Number of kin deaths experienced") +
-  theme_bw()
 
-```
-
-A member of the population aged 15, 50, and 65yo will have experienced, on average, the death of `r loss2 %>% filter(age_focal %in% c(15, 50, 65)) %>% pull(count) %>% round(1) %>% paste(., collapse = ", ")` relatives, respectively. 
-We can decompose this by relative type:
-
-```{r}
 swe_2015$kin_summary %>%
   group_by(age_focal, kin) %>% 
   summarise(count = sum(count_cum_dead)) %>% 
@@ -389,6 +345,9 @@ swe_2015$kin_summary %>%
   theme_bw() +
   theme(legend.position = "bottom")
 ```
+
+A member of the population aged 15, 50, and 65yo will have experienced, on average, the death of `r loss2 %>% filter(age_focal %in% c(15, 50, 65)) %>% pull(count) %>% round(1) %>% paste(., collapse = ", ")` relatives, respectively. 
+We can decompose this by relative type:
 
 # 5. Vignette and extensions
 
@@ -518,9 +477,9 @@ swe_x$kin_summary$count_living[71]
 The 'Sandwich Generation' refers to persons who are squeezed between frail older parents and young dependent children and are assumed to have simultaneous care responsibilities for multiple generations, potentially limiting their ability to provide care. In demography, 'sandwichness' is a generational process that depends on the genealogical position of an individual vis-a-vis their ascendants and descendants.
 For this exercise, we consider an individual to be 'sandwiched' if they have at least one child aged $15$ or younger and a parent or parent within $5$ years of death. Alburez‐Gutierrez, Mason, and Zagheni[-@alburezgutierrez_sandwich_2021] defined the probability that an average woman aged $a$ is 'sandwiched' in a stable female population as:
 
-\begin{equation}
+$$
 S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of ego}\\ \text{is alive when ego is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of ego}\\ \text{would die within $5$ years}}}    
-\end{equation}
+$$
 
 where 
 
