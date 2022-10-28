@@ -597,7 +597,7 @@ library(tidyr)
 swe_surv_x <- DemoKin::swe_px[,"2010"]
 swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
 # Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = "m")
+swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = c("os", "ys"))
 
 # For plotting
 dummy <- data.frame(
@@ -629,7 +629,7 @@ swe_x$kin_full %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-    ## Warning: Removed 12 row(s) containing missing values (geom_path).
+    ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
 ![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
 
@@ -653,8 +653,6 @@ swe_x$kin_full %>%
   labs(y = "Age of sister") +
   theme_bw()
 ```
-
-    ## Warning: Removed 12 row(s) containing missing values (geom_path).
 
 ![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 

@@ -394,7 +394,7 @@ library(tidyr)
 swe_surv_x <- DemoKin::swe_px[,"2010"]
 swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
 # Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = "m")
+swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = c("os", "ys"))
 
 # For plotting
 dummy <- data.frame(
