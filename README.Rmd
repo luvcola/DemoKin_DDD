@@ -31,7 +31,7 @@ library(ggplot2)
 library(fields)
 ```
 
-# Built-in data
+# 2. Built-in data
 
 The `DemoKin` package includes data from Sweden as an example. 
 The data comes from the [Human Mortality Database](https://www.mortality.org/) and [Human Fertility Database](https://www.humanfertility.org/). 
@@ -86,7 +86,7 @@ image.plot(
   )
 ```
 
-# 2. The function `kin()`
+# 3. The function `kin()`
 
 `DemoKin::kin()` currently does most of the heavy lifting in terms of implementing matrix kinship models. 
 This is what it looks like in action, in this case assuming time-invariant demographic rates:
@@ -157,7 +157,7 @@ kin_by_age_focal %>%
 
 ```
 
-# 3. Example: kin counts in time-invariant populations
+# 4. Example: kin counts in time-invariant populations
 
 Following Caswell [-@caswell_formal_2019], we assume a female closed population in which everyone experiences the Swedish 1950 mortality and fertility rates at each age throughout their life.
 We then ask:
@@ -372,11 +372,15 @@ swe_2015$kin_summary %>%
   theme(legend.position = "bottom")
 ```
 
-# 4. Exercises
+# 5. Vignette and extensions
+
+For more details, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = T)`.
+
+# 6. Exercises
 
 ## Exercise 1. Age of kin
 
-The output of `DemoKin::kin` includes information on the age of relatives in the the columns `kin_summary$mean_age` and `kin_summary$$sd_age`. For example, this allows us to determine the age of Focal's cousins over the lifecourse of Focal? 
+The output of `DemoKin::kin` includes information on the age of Focal's relatives (in the columns `kin_summary$mean_age` and `kin_summary$$sd_age`). For example, this allows us to determine the age of Focal's cousins over the lifecourse of Focal: 
 
 ```{r}
 

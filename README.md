@@ -5,11 +5,12 @@ Workshop ‘The Formal Demography of Kinship: Theory and Application’ -
 Dutch Demography Day; Nov 16 2022
 
   - [1. Installation](#1-installation)
-  - [Built-in data](#built-in-data)
-  - [2. The function `kin()`](#2-the-function-kin)
-  - [3. Example: kin counts in time-invariant
-    populations](#3-example-kin-counts-in-time-invariant-populations)
-  - [4. Exercises](#4-exercises)
+  - [2. Built-in data](#2-built-in-data)
+  - [3. The function `kin()`](#3-the-function-kin)
+  - [4. Example: kin counts in time-invariant
+    populations](#4-example-kin-counts-in-time-invariant-populations)
+  - [5. Vignette and extensions](#5-vignette-and-extensions)
+  - [6. Exercises](#6-exercises)
 
 # 1\. Installation
 
@@ -86,7 +87,7 @@ library(fields)
     ## See https://github.com/NCAR/Fields for
     ##  an extensive vignette, other supplements and source code
 
-# Built-in data
+# 2\. Built-in data
 
 The `DemoKin` package includes data from Sweden as an example. The data
 comes from the [Human Mortality Database](https://www.mortality.org/)
@@ -188,7 +189,7 @@ image.plot(
 
 ![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
-# 2\. The function `kin()`
+# 3\. The function `kin()`
 
 `DemoKin::kin()` currently does most of the heavy lifting in terms of
 implementing matrix kinship models. This is what it looks like in
@@ -322,7 +323,7 @@ kin_by_age_focal %>%
 
     ## [1] TRUE
 
-# 3\. Example: kin counts in time-invariant populations
+# 4\. Example: kin counts in time-invariant populations
 
 Following Caswell (2019), we assume a female closed population in which
 everyone experiences the Swedish 1950 mortality and fertility rates at
@@ -580,14 +581,22 @@ swe_2015$kin_summary %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
-# 4\. Exercises
+# 5\. Vignette and extensions
+
+For more details, including an extension to time varying-populations
+rates, deceased kin, and multi-state models, see `vignette("Reference",
+package = "DemoKin")`. If the vignette does not load, you may need to
+install the package as `devtools::install_github("IvanWilli/DemoKin",
+build_vignettes = T)`.
+
+# 6\. Exercises
 
 ## Exercise 1. Age of kin
 
-The output of `DemoKin::kin` includes information on the age of
-relatives in the the columns `kin_summary$mean_age` and
-`kin_summary$$sd_age`. For example, this allows us to determine the age
-of Focal’s cousins over the lifecourse of Focal?
+The output of `DemoKin::kin` includes information on the age of Focal’s
+relatives (in the columns `kin_summary$mean_age` and
+`kin_summary$$sd_age`). For example, this allows us to determine the age
+of Focal’s cousins over the lifecourse of Focal:
 
 ``` r
 swe_2015$kin_summary %>%  
