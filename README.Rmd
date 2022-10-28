@@ -7,6 +7,7 @@ date: 'Workshop ''The Formal Demography of Kinship: Theory and Application'' - D
 output:
   github_document:
     toc: true
+    toc_depth: 1
 bibliography: kinship.bib
 ---
 
@@ -386,7 +387,7 @@ Use DemoKin to obtain $M_1(a)$, the probability of having a living mother at age
 
 **Answer:** What is the probability that Focal has a living mother when Focal turns 70 years old?
 
-### Solution:
+**Solution:**
 
 ```{r}
 # First, get vectors for a given year
@@ -430,7 +431,7 @@ Use DemoKin to compute the probability that Focal is sandwiched, $S(a)$, between
 
 **Answer:** At which age is Focal at a highest risk of finding herself sandwiched between young dependent children and fragile older parents?
 
-### Solution:
+**Solution:**
 
 ```{r}
 # First, get vectors for a given year

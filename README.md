@@ -6,34 +6,10 @@ Dutch Demography Day; Nov 16 2022
 
   - [1. Installation](#1-installation)
   - [Built-in data](#built-in-data)
-      - [`swe_surv` matrix; survival ratio by age (DemoKin’s *U*
-        argument)](#swe_surv-matrix-survival-ratio-by-age-demokins-u-argument)
-      - [`swe_asfr` matrix; age specific fertility rate (DemoKin’s *f*
-        argument)](#swe_asfr-matrix-age-specific-fertility-rate-demokins-f-argument)
   - [2. The function `kin()`](#2-the-function-kin)
-      - [Arguments](#arguments)
-      - [Relative types](#relative-types)
-      - [Value](#value)
-          - [`kin_full`](#kin_full)
-          - [`kin_summary`](#kin_summary)
   - [3. Example: kin counts in time-invariant
     populations](#3-example-kin-counts-in-time-invariant-populations)
-      - [‘Keyfitz’ kinship diagram](#keyfitz-kinship-diagram)
-      - [Expected kin counts for a Focal person surviving to each
-        age](#expected-kin-counts-for-a-focal-person-surviving-to-each-age)
-          - [Family size](#family-size)
-      - [Age distribution of relatives](#age-distribution-of-relatives)
-      - [Deceased kin](#deceased-kin)
-          - [Cumulative number of kin
-            deaths](#cumulative-number-of-kin-deaths)
   - [4. Exercises](#4-exercises)
-      - [Exercise 1. Living mother](#exercise-1-living-mother)
-          - [Solution:](#solution)
-      - [Exercise 2. Sandwich
-        Generation](#exercise-2-sandwich-generation)
-          - [Solution:](#solution-1)
-      - [Exercise 3. Age of kin](#exercise-3-age-of-kin)
-      - [References](#references)
 
 # 1\. Installation
 
@@ -619,7 +595,7 @@ mother is alive when she gives birth), and goes monotonically to zero.
 **Answer:** What is the probability that Focal has a living mother when
 Focal turns 70 years old?
 
-### Solution:
+**Solution:**
 
 ``` r
 # First, get vectors for a given year
@@ -675,7 +651,7 @@ Use DemoKin to compute the probability that Focal is sandwiched,
 **Answer:** At which age is Focal at a highest risk of finding herself
 sandwiched between young dependent children and fragile older parents?
 
-### Solution:
+**Solution:**
 
 ``` r
 # First, get vectors for a given year
