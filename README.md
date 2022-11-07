@@ -1,9 +1,8 @@
 Getting started with matrix kinship models in R using DemoKin
 ================
-Instructor: Diego Alburez-Gutierrez (Max Planck Institute for
-Demographic Research)
-Workshop ‘The Formal Demography of Kinship: Theory and Application’ -
-Dutch Demography Day; Nov 16 2022
+Instructor: Diego Alburez-Gutierrez (MPIDR);
+The Formal Demography of Kinship: Theory and Application - Dutch
+Demography Day; Nov 16 2022
 
   - [1. Installation](#1-installation)
   - [2. Built-in data](#2-built-in-data)
@@ -12,15 +11,18 @@ Dutch Demography Day; Nov 16 2022
     populations](#4-example-kin-counts-in-time-invariant-populations)
   - [5. Vignette and extensions](#5-vignette-and-extensions)
   - [6. Exercises](#6-exercises)
+  - [7. Appendix](#7-appendix)
+  - [Session info](#session-info)
 
 <img src="DemoKin-Logo.png" align="right" width="200" />
 
 # 1\. Installation
 
-Install the development version from GitHub (could take \~1 minute). We
-made changes to the `DemoKin` package ahead of this workshop If you had
-already installed the package, please uninstall it and and install it
-again.
+Install the [development version from
+GitHub](https://github.com/IvanWilli/DemoKin) (could take \~1 minute).
+We made changes to the `DemoKin` package ahead of this workshop If you
+had already installed the package, please uninstall it and and install
+it again.
 
 ``` r
 # remove.packages("DemoKin")
@@ -126,13 +128,11 @@ swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 
 ## Arguments
 
-  - **U** numeric. A vector (atomic) or matrix with probabilities (or
-    survival ratios, or transition between age class in a more general
-    perspective) with rows as ages (and columns as years in case of
-    matrix, being the name of each col the year).
+  - **U** numeric. A vector (atomic) or matrix of survival probabilities
+    with rows as ages (and columns as years in case of matrix).
   - **f** numeric. Same as U but for fertility rates.
-  - **time\_invariant** logical. Constant assumption for a given year
-    rates. Default TRUE.
+  - **time\_invariant** logical. Assume time-invariant rates. Default
+    TRUE.
   - **output\_kin** character. kin types to return: “m” for mother, “d”
     for daughter, …
 
@@ -195,8 +195,8 @@ str(swe_2015)
 
 ### `kin_full`
 
-This data frame contains expected kin counts by year (or cohort in case
-`time_invariant` = FALSE), age of Focal and age of kin.
+This data frame contains expected kin counts by year (or cohort), age of
+Focal, and age of kin.
 
 ``` r
 head(swe_2015$kin_full)
@@ -293,9 +293,10 @@ swe_2015$kin_summary %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
-> Note: we are working in a time invariant framework. You can think if
-> the results as analogous to life expectancy: expected years of life
-> for a synthetic cohort experiencing observed period mortality rates.
+> Note that we are working in a time invariant framework. You can think
+> of the results as analogous to life expectancy (i.e., expected years
+> of life for a synthetic cohort experiencing a given set of period
+> mortality rates).
 
 ### Family size
 
@@ -323,7 +324,7 @@ swe_2015$kin_summary %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
-## Age distribution of relatives
+### Age distribution of relatives
 
 How old are Focal’s relatives? Using the `kin_full` data frame, we can
 visualize the age distribution of Focal’s relatives throughout Focal’s
@@ -343,67 +344,7 @@ facet_wrap(~kin)
 
 ![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
-The output of the `DemoKin::kin()` function can also be used to easily
-determine the mean age Focal’s relatives by kin type. For simplicity,
-let’s focus on a Focal aged 35 yo and get the mean age (and standard
-deviation) of her relatives in our time-invariant population.
-
-``` r
-ages_df <- 
-  swe_2015$kin_summary %>% 
-  filter(age_focal == 35) %>% 
-  select(kin, mean_age, sd_age)
-
-ma <- 
-  ages_df %>% 
-  filter(kin=="m") %>% 
-  pull(mean_age) %>% 
-  round(1)
-
-sda <- 
-  ages_df %>% 
-  filter(kin=="m") %>% 
-  pull(sd_age) %>% 
-  round(1)
-
-print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
-```
-
-    ## [1] "The mother of a 35-yo Focal woman in our time-invariant population is, on average, 65.4 years old, with a standard deviation of 5.1 years."
-
-Finally, let´s visualize the living kin by type and mean age during
-Ego’s life course:
-
-``` r
-swe_2015$kin_full %>%
-  filter(kin %in% c("m", "gm", "d", "gd")) %>%
-  rename_kin() %>% 
-  group_by(age_focal, kin) %>% 
-  summarise(
-    count = sum(living)
-    , mean_age = sum(living * age_kin, na.rm=T)/sum(living)
-    ) %>% 
-  ggplot(aes(age_focal,mean_age)) + 
-  geom_point(aes(size=count,color=kin)) +
-  geom_line(aes(color=kin)) +
-  scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
-  scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
-  geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
-  labs(color="Relative",size="Living")+
-  coord_fixed() +
-  theme_bw()
-```
-
-    ## `summarise()` has grouped output by 'age_focal'. You can override using the
-    ## `.groups` argument.
-
-    ## Warning: Removed 87 rows containing missing values (geom_point).
-
-    ## Warning: Removed 87 row(s) containing missing values (geom_path).
-
-![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-
-## Deceased kin
+### Deceased kin
 
 We have focused on living kin, but what about relatives who have died
 during her life? The output of `kin` also includes information of kin
@@ -439,7 +380,7 @@ swe_2015$kin_summary %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ### Cumulative number of kin deaths
 
@@ -470,7 +411,7 @@ swe_2015$kin_summary %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 A member of the population aged 15, 50, and 65yo will have experienced,
 on average, the death of 0.5, 1.9, 2.9 relatives, respectively. We can
@@ -512,7 +453,7 @@ swe_2015$kin_summary %>%
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
 
 **Instructions**
 
@@ -564,7 +505,7 @@ swe_x$kin_full %>%
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 Second, get ages of all sisters, irrespective of whether they are older
 or younger:
@@ -587,7 +528,7 @@ swe_x$kin_full %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 ## Exercise 2. Living mother
 
@@ -626,7 +567,7 @@ swe_x$kin_summary %>%
   theme_bw()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
 
 ``` r
 swe_x$kin_summary$count_living[71]
@@ -728,7 +669,111 @@ data.frame(age_focal = ages, y = S) %>%
   theme_bw()
 ```
 
+![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
+
+# 7\. Appendix
+
+## Mean age of relatives
+
+The output of the `DemoKin::kin()` function can also be used to easily
+determine the mean age Focal’s relatives by kin type. For simplicity,
+let’s focus on a Focal aged 35 yo and get the mean age (and standard
+deviation) of her relatives in our time-invariant population.
+
+``` r
+ages_df <- 
+  swe_2015$kin_summary %>% 
+  filter(age_focal == 35) %>% 
+  select(kin, mean_age, sd_age)
+
+ma <- 
+  ages_df %>% 
+  filter(kin=="m") %>% 
+  pull(mean_age) %>% 
+  round(1)
+
+sda <- 
+  ages_df %>% 
+  filter(kin=="m") %>% 
+  pull(sd_age) %>% 
+  round(1)
+
+print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
+```
+
+    ## [1] "The mother of a 35-yo Focal woman in our time-invariant population is, on average, 65.4 years old, with a standard deviation of 5.1 years."
+
+Finally, let´s visualize the living kin by type and mean age during
+Ego’s life course:
+
+``` r
+swe_2015$kin_full %>%
+  filter(kin %in% c("m", "gm", "d", "gd")) %>%
+  rename_kin() %>% 
+  group_by(age_focal, kin) %>% 
+  summarise(
+    count = sum(living)
+    , mean_age = sum(living * age_kin, na.rm=T)/sum(living)
+    ) %>% 
+  ggplot(aes(age_focal,mean_age)) + 
+  geom_point(aes(size=count,color=kin)) +
+  geom_line(aes(color=kin)) +
+  scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
+  labs(color="Relative",size="Living")+
+  coord_fixed() +
+  theme_bw()
+```
+
+    ## `summarise()` has grouped output by 'age_focal'. You can override using the
+    ## `.groups` argument.
+
+    ## Warning: Removed 87 rows containing missing values (geom_point).
+
+    ## Warning: Removed 87 row(s) containing missing values (geom_path).
+
 ![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+# Session info
+
+``` r
+sessionInfo()
+```
+
+    ## R version 4.0.2 (2020-06-22)
+    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
+    ## Running under: Windows 10 x64 (build 19044)
+    ## 
+    ## Matrix products: default
+    ## 
+    ## locale:
+    ## [1] LC_COLLATE=English_United Kingdom.1252 
+    ## [2] LC_CTYPE=English_United Kingdom.1252   
+    ## [3] LC_MONETARY=English_United Kingdom.1252
+    ## [4] LC_NUMERIC=C                           
+    ## [5] LC_TIME=English_United Kingdom.1252    
+    ## 
+    ## attached base packages:
+    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
+    ## [8] base     
+    ## 
+    ## other attached packages:
+    ## [1] fields_11.6     spam_2.6-0      dotCall64_1.0-1 ggplot2_3.3.3  
+    ## [5] tidyr_1.1.3     dplyr_1.0.5     DemoKin_1.0.0  
+    ## 
+    ## loaded via a namespace (and not attached):
+    ##  [1] highr_0.8        pillar_1.5.1     compiler_4.0.2   tools_4.0.2     
+    ##  [5] digest_0.6.28    evaluate_0.17    lifecycle_1.0.0  tibble_3.1.0    
+    ##  [9] gtable_0.3.0     pkgconfig_2.0.3  rlang_1.0.2      igraph_1.2.6    
+    ## [13] cli_3.2.0        DBI_1.1.1        rstudioapi_0.13  yaml_2.2.1      
+    ## [17] xfun_0.21        fastmap_1.1.0    withr_2.5.0      stringr_1.4.0   
+    ## [21] knitr_1.31       maps_3.3.0       generics_0.1.0   vctrs_0.4.1     
+    ## [25] tidyselect_1.1.0 glue_1.6.2       R6_2.5.0         fansi_0.4.2     
+    ## [29] rmarkdown_2.7    farver_2.1.0     purrr_0.3.4      magrittr_2.0.1  
+    ## [33] scales_1.1.1     ellipsis_0.3.2   htmltools_0.5.2  assertthat_0.2.1
+    ## [37] colorspace_2.0-0 labeling_0.4.2   utf8_1.2.1       stringi_1.5.3   
+    ## [41] munsell_0.5.0    crayon_1.4.1
 
 ## References
 

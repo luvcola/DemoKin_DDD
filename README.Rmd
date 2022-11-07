@@ -1,8 +1,7 @@
 ---
 title: "Getting started with matrix kinship models in R using DemoKin"
-author: |
-  | Instructor: Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research)
-date: "Workshop 'The Formal Demography of Kinship: Theory and Application' - Dutch Demography Day; Nov 16 2022"
+author: "Instructor: Diego Alburez-Gutierrez (MPIDR);" 
+date: "The Formal Demography of Kinship: Theory and Application - Dutch Demography Day; Nov 16 2022"
 output:
   github_document:
     pandoc_args: --webtex
@@ -17,7 +16,7 @@ bibliography: kinship.bib
 
 # 1. Installation
 
-Install the development version from GitHub (could take ~1 minute). We made changes to the `DemoKin` package ahead of this workshop If you had already installed the package, please uninstall it and and install it again.
+Install the [development version from GitHub](https://github.com/IvanWilli/DemoKin) (could take ~1 minute). We made changes to the `DemoKin` package ahead of this workshop If you had already installed the package, please uninstall it and and install it again.
 
 ```{r, eval=FALSE}
 # remove.packages("DemoKin")
@@ -101,9 +100,9 @@ swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 
 ## Arguments
 
-- **U** numeric. A vector (atomic) or matrix with probabilities (or survival ratios, or transition between age class in a more general perspective) with rows as ages (and columns as years in case of matrix, being the name of each col the year).
+- **U** numeric. A vector (atomic) or matrix of survival probabilities with rows as ages (and columns as years in case of matrix).
 - **f** numeric. Same as U but for fertility rates.
-- **time_invariant** logical. Constant assumption for a given year rates. Default TRUE.
+- **time_invariant** logical. Assume time-invariant rates. Default TRUE.
 - **output_kin** character. kin types to return: "m" for mother, "d" for daughter, ...
 
 ## Relative types
@@ -127,7 +126,7 @@ str(swe_2015)
 
 ### `kin_full` 
 
-This data frame contains expected kin counts by year (or cohort in case `time_invariant` = FALSE), age of Focal and age of kin. 
+This data frame contains expected kin counts by year (or cohort), age of Focal, and age of kin. 
 
 ```{r}
 head(swe_2015$kin_full)
@@ -200,7 +199,7 @@ swe_2015$kin_summary %>%
   facet_wrap(~kin)
 ```
 
-> Note: we are working in a time invariant framework. You can think if the results as analogous to life expectancy: expected years of life for a synthetic cohort experiencing observed period mortality rates.
+> Note that we are working in a time invariant framework. You can think of the results as analogous to life expectancy (i.e., expected years of life for a synthetic cohort experiencing a given set of period mortality rates).
 
 ### Family size
 
@@ -225,7 +224,7 @@ swe_2015$kin_summary %>%
   theme(legend.position = "bottom")
 ```
 
-## Age distribution of relatives
+### Age distribution of relatives
 
 How old are Focal's relatives? Using the `kin_full` data frame, we can visualize the age distribution of Focal's relatives throughout Focal's life. For example when Focal is 35, what are the ages of her relatives:
 
@@ -243,53 +242,7 @@ facet_wrap(~kin)
 
 ```
 
-The output of the `DemoKin::kin()` function can also be used to easily determine the mean age Focal's relatives by kin type. 
-For simplicity, let's focus on a Focal aged 35 yo and get the mean age (and standard deviation) of her relatives in our time-invariant population. 
-
-```{r}
-ages_df <- 
-  swe_2015$kin_summary %>% 
-  filter(age_focal == 35) %>% 
-  select(kin, mean_age, sd_age)
-
-ma <- 
-  ages_df %>% 
-  filter(kin=="m") %>% 
-  pull(mean_age) %>% 
-  round(1)
-
-sda <- 
-  ages_df %>% 
-  filter(kin=="m") %>% 
-  pull(sd_age) %>% 
-  round(1)
-
-print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
-```
-
-Finally, let´s visualize the living kin by type and mean age during Ego's life course:
-
-```{r}
-swe_2015$kin_full %>%
-  filter(kin %in% c("m", "gm", "d", "gd")) %>%
-  rename_kin() %>% 
-  group_by(age_focal, kin) %>% 
-  summarise(
-    count = sum(living)
-    , mean_age = sum(living * age_kin, na.rm=T)/sum(living)
-    ) %>% 
-  ggplot(aes(age_focal,mean_age)) + 
-  geom_point(aes(size=count,color=kin)) +
-  geom_line(aes(color=kin)) +
-  scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
-  scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
-  geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
-  labs(color="Relative",size="Living")+
-  coord_fixed() +
-  theme_bw()
-```
-
-## Deceased kin
+### Deceased kin
 
 We have focused on living kin, but what about relatives who have died during her life? 
 The output of `kin` also includes information of kin deaths experienced by Focal.
@@ -534,5 +487,62 @@ data.frame(age_focal = ages, y = S) %>%
 
 ```
 
+# 7. Appendix
+
+
+## Mean age of relatives
+
+The output of the `DemoKin::kin()` function can also be used to easily determine the mean age Focal's relatives by kin type. 
+For simplicity, let's focus on a Focal aged 35 yo and get the mean age (and standard deviation) of her relatives in our time-invariant population. 
+
+```{r}
+ages_df <- 
+  swe_2015$kin_summary %>% 
+  filter(age_focal == 35) %>% 
+  select(kin, mean_age, sd_age)
+
+ma <- 
+  ages_df %>% 
+  filter(kin=="m") %>% 
+  pull(mean_age) %>% 
+  round(1)
+
+sda <- 
+  ages_df %>% 
+  filter(kin=="m") %>% 
+  pull(sd_age) %>% 
+  round(1)
+
+print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
+```
+
+Finally, let´s visualize the living kin by type and mean age during Ego's life course:
+
+```{r}
+swe_2015$kin_full %>%
+  filter(kin %in% c("m", "gm", "d", "gd")) %>%
+  rename_kin() %>% 
+  group_by(age_focal, kin) %>% 
+  summarise(
+    count = sum(living)
+    , mean_age = sum(living * age_kin, na.rm=T)/sum(living)
+    ) %>% 
+  ggplot(aes(age_focal,mean_age)) + 
+  geom_point(aes(size=count,color=kin)) +
+  geom_line(aes(color=kin)) +
+  scale_x_continuous(name = "Age Focal", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  scale_y_continuous(name = "Age kin", breaks = seq(0,100,10), labels = seq(0,100,10))+
+  geom_segment(x = 0, y = 0, xend = 100, yend = 100, color = 1, linetype=2)+
+  labs(color="Relative",size="Living")+
+  coord_fixed() +
+  theme_bw()
+```
+
+# Session info
+
+
+```{r}
+sessionInfo()
+```
 
 ## References
