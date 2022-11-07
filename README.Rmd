@@ -40,7 +40,7 @@ The `DemoKin` package includes data from Sweden as an example.
 The data comes from the [Human Mortality Database](https://www.mortality.org/) and [Human Fertility Database](https://www.humanfertility.org/). 
 These datasets were loaded using the`DemoKin::get_HMDHFD` function.
 
-### `swe_px` matrix; survival probabilities by age (DemoKin's *U* argument)
+### 2.1. `swe_px` matrix; survival probabilities by age (DemoKin's *U* argument)
 
 This is what the data looks like:
 
@@ -63,7 +63,7 @@ image.plot(
   )
 ```
 
-### `swe_asfr` matrix; age specific fertility rate (DemoKin's *f* argument)
+### 2.2. `swe_asfr` matrix; age specific fertility rate (DemoKin's *f* argument)
 
 This is what the data looks like:
 
@@ -98,14 +98,14 @@ swe_asfr_2015 <- DemoKin::swe_asfr[,"2015"]
 swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 ```
 
-## Arguments
+## 3.1. Arguments
 
 - **U** numeric. A vector (atomic) or matrix of survival probabilities with rows as ages (and columns as years in case of matrix).
 - **f** numeric. Same as U but for fertility rates.
 - **time_invariant** logical. Assume time-invariant rates. Default TRUE.
 - **output_kin** character. kin types to return: "m" for mother, "d" for daughter, ...
 
-## Relative types
+## 3.2. Relative types
 
 Relatives for the `output_kin` argument are identified by a unique code.
 Note that the relationship codes used in `DemoKin` differ from those in Caswell [-@caswell_formal_2019]. 
@@ -116,7 +116,7 @@ The equivalence between the two set of codes is given in the following table:
 demokin_codes()
 ```
 
-## Value
+## 3.4. Value
 
 `DemoKin::kin()` returns a list containing two data frames: `kin_full` and `kin_summary`. 
 
@@ -173,7 +173,7 @@ swe_asfr_2015 <- DemoKin::swe_asfr[,"2015"]
 swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 ```
 
-## 'Keyfitz' kinship diagram
+## 4.1. 'Keyfitz' kinship diagram
 
 We can visualize the implied kin counts for a Focal woman aged 35 yo in a time-invariant population using a network or 'Keyfitz' kinship diagram [@Keyfitz2005] with the `plot_diagram` function:
 
@@ -184,7 +184,7 @@ swe_2015$kin_summary %>%
   plot_diagram(rounding = 2)
 ```
 
-## Expected kin counts for a Focal person surviving to each age
+## 4.2. Living kin
 
 Now, let's visualize how the expected number of daughters, siblings, cousins, etc., changes over the lifecourse of Focal (now, with full names to identify each relative type using the function `DemoKin::rename_kin()`).
 
@@ -200,8 +200,6 @@ swe_2015$kin_summary %>%
 ```
 
 > Note that we are working in a time invariant framework. You can think of the results as analogous to life expectancy (i.e., expected years of life for a synthetic cohort experiencing a given set of period mortality rates).
-
-### Family size
 
 How does overall family size (and family composition) vary over life for an average woman who survives to each age?
 
@@ -224,7 +222,7 @@ swe_2015$kin_summary %>%
   theme(legend.position = "bottom")
 ```
 
-### Age distribution of relatives
+## 4.3. Age distribution of living kin
 
 How old are Focal's relatives? Using the `kin_full` data frame, we can visualize the age distribution of Focal's relatives throughout Focal's life. For example when Focal is 35, what are the ages of her relatives:
 
@@ -242,7 +240,7 @@ facet_wrap(~kin)
 
 ```
 
-### Deceased kin
+## 4.4. Deceased kin
 
 We have focused on living kin, but what about relatives who have died during her life? 
 The output of `kin` also includes information of kin deaths experienced by Focal.
@@ -271,8 +269,6 @@ swe_2015$kin_summary %>%
   theme_bw() +
   theme(legend.position = "bottom")
 ```
-
-### Cumulative number of kin deaths
 
 Now, we combine all kin types to show the cumulative burden of kin death for an average member of the population surviving to each age:
 
@@ -497,7 +493,7 @@ data.frame(age_focal = ages, y = S) %>%
 # 7. Appendix
 
 
-## Mean age of relatives
+## 7.1. Mean age of living kin
 
 The output of the `DemoKin::kin()` function can also be used to easily determine the mean age Focal's relatives by kin type. 
 For simplicity, let's focus on a Focal aged 35 yo and get the mean age (and standard deviation) of her relatives in our time-invariant population. 
@@ -523,6 +519,8 @@ sda <-
 print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
 ```
 
+## 7.2. Visualizing living kin
+
 Finally, let´s visualize the living kin by type and mean age during Ego's life course:
 
 ```{r}
@@ -545,7 +543,7 @@ swe_2015$kin_full %>%
   theme_bw()
 ```
 
-# Session info
+# 8. Session info
 
 
 ```{r}
