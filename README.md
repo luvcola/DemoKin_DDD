@@ -419,11 +419,19 @@ decompose this by relative type:
 
 # 5\. Vignette and extensions
 
-For more details, including an extension to time varying-populations
-rates, deceased kin, and multi-state models, see `vignette("Reference",
-package = "DemoKin")`. If the vignette does not load, you may need to
-install the package as `devtools::install_github("IvanWilli/DemoKin",
-build_vignettes = TRUE)`.
+For more details on `DemoKin`, including an extension to time
+varying-populations rates, deceased kin, and multi-state models, see
+`vignette("Reference", package = "DemoKin")`. If the vignette does not
+load, you may need to install the package as
+`devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+
+For a detailed description of extensions of the matrix kinship model,
+see:
+
+  - time-invariant rates (Caswell 2019),
+  - multistate models (Caswell 2020),
+  - time-varying rates (Caswell and Song 2021), and
+  - two-sex models (Caswell 2022).
 
 # 6\. Exercises
 
@@ -783,8 +791,8 @@ sessionInfo()
 
 Alburez‐Gutierrez, Diego, Carl Mason, and Emilio Zagheni. 2021. “The
 ‘Sandwich Generation’ Revisited: Global Demographic Drivers of Care
-Time Demands.” *Population and Development Review* Advanced publication
-(September). <https://doi.org/10.1111/padr.12436>.
+Time Demands.” *Population and Development Review* 47 (4): 997–1023.
+<https://doi.org/10.1111/padr.12436>.
 
 </div>
 
@@ -793,6 +801,30 @@ Time Demands.” *Population and Development Review* Advanced publication
 Caswell, Hal. 2019. “The Formal Demography of Kinship: A Matrix
 Formulation.” *Demographic Research* 41 (September): 679–712.
 <https://doi.org/10.4054/DemRes.2019.41.24>.
+
+</div>
+
+<div id="ref-caswell_formal_2020">
+
+———. 2020. “The Formal Demography of Kinship II: Multistate Models,
+Parity, and Sibship.” *Demographic Research* 42 (June): 1097–1146.
+<https://doi.org/10.4054/DemRes.2020.42.38>.
+
+</div>
+
+<div id="ref-caswell_formal_2022">
+
+———. 2022. “The Formal Demography of Kinship IV: Two-Sex Models and
+Their Approximations.” *Demographic Research* 47 (September): 359–96.
+<https://doi.org/10.4054/DemRes.2022.47.13>.
+
+</div>
+
+<div id="ref-caswell_formal_2021">
+
+Caswell, Hal, and Xi Song. 2021. “The Formal Demography of Kinship. III.
+Kinship Dynamics with Time-Varying Demographic Rates.” *Demographic
+Research* 45: 517–46.
 
 </div>
 

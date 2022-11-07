@@ -302,7 +302,14 @@ We can decompose this by relative type:
 
 # 5. Vignette and extensions
 
-For more details, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+
+For a detailed description of extensions of the matrix kinship model, see:
+
+- time-invariant rates [@caswell_formal_2019],
+- multistate models [@caswell_formal_2020],
+- time-varying rates [@caswell_formal_2021], and
+- two-sex models [@caswell_formal_2022].
 
 # 6. Exercises
 
