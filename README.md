@@ -435,12 +435,32 @@ see:
 Sweden and a female-only population. All exercises can be completed
 using datasets included in DemoKin.**
 
-## Exercise 1. Age of kin
+## Exercise 1. Offspring availability and loss
 
-The output of `DemoKin::kin` includes information on the age of Focal’s
-relatives (in the columns `kin_summary$mean_age` and
-`kin_summary$$sd_age`). For example, this allows us to determine the age
-of Focal’s sisters over the lifecourse of Focal:
+Use `DemoKin` (assuming time-invariant rates at the 2010 levels in
+Sweden and a female-only population) to explore offspring survival and
+loss for mothers.
+
+**Answer**: What is the expected number of surviving offspring for an
+average woman aged 65?
+
+``` r
+# Write your code here
+```
+
+**Answer**: What is the cumulative number of offspring deaths
+experienced by an average woman who survives to age 65?
+
+``` r
+# Write your code here
+```
+
+## Exercise 2. Mean age of kin
+
+The output of `DemoKin::kin` includes information on the average age of
+Focal’s relatives (in the columns `kin_summary$mean_age` and
+`kin_summary$$sd_age`). For example, this allows us to determine the
+mean age of Focal’s sisters over the lifecourse of Focal:
 
 ``` r
 swe_2015$kin_summary %>%  
@@ -451,13 +471,13 @@ swe_2015$kin_summary %>%
   ggplot(aes(x = age_focal, y = value, colour = kin)) +
   geom_line() +
   facet_wrap(~name, scales = "free") +
-  labs(y = "Age of sister") +
+  labs(y = "Mean age of sister(s)") +
   theme_bw()
 ```
 
     ## Warning: Removed 1 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 **Instructions**
 
@@ -465,76 +485,21 @@ Compute the the mean and SD of the age of Focal’s sisters over the ages
 of Focal **by hand** (i.e., using the raw output in `kin_full`). Plot
 separately (1) for younger and older sisters, (2) and for all sisters.
 
-**Solution**
-
 First, get mean and SD of ages of sisters distinguishing between younger
 and older sisters:
 
 ``` r
-# First, get vectors for a given year
-swe_surv_x <- DemoKin::swe_px[,"2010"]
-swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
-# Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = c("os", "ys"))
-
-# For plotting
-dummy <- data.frame(
-      age_focal = 0:100
-      , name = "mean"
-      , value = 0:100
-      , kin = "os"
-      )
-
-# Younger and older sister separately
-swe_x$kin_full %>% 
-  rename_kin() %>% 
-  group_by(age_focal, kin) %>% 
-  summarise(
-    mean = sum(0:100*living)/sum(living)
-    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
-  ) %>% 
-  ungroup() %>% 
-  pivot_longer(cols = mean:sd) %>% 
-  ggplot(aes(x = age_focal, y = value, colour = kin)) +
-  geom_line() +
-  geom_line(data = dummy, colour = "black", linetype = "dashed") +
-  # geom_abline(slope = 1, linetype = "dashed") +
-  facet_wrap(~name, scales = "free") +
-  labs(y = "Age of sister") +
-  theme_bw()
+# Write your code here
 ```
-
-    ## `summarise()` has grouped output by 'age_focal'. You can override using the
-    ## `.groups` argument.
-
-    ## Warning: Removed 1 row(s) containing missing values (geom_path).
-
-![](README_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 Second, get ages of all sisters, irrespective of whether they are older
 or younger:
 
 ``` r
-# All sister together
-swe_x$kin_full %>% 
-  group_by(age_focal) %>% 
-  summarise(
-    mean = sum(0:100*living)/sum(living)
-    , sd = sqrt(sum(living * (0:100 - mean)^2) / sum(living))
-  ) %>% 
-  ungroup() %>% 
-  pivot_longer(cols = mean:sd) %>% 
-  ggplot(aes(x = age_focal, y = value)) +
-  geom_line() +
-    geom_line(data = dummy, colour = "red", linetype = "dashed") +
-  facet_wrap(~name, scales = "free") +
-  labs(y = "Age of sister") +
-  theme_bw()
+# Write your code here
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
-
-## Exercise 2. Living mother
+## Exercise 3. Living mother
 
 What is the probability that Focal (an average Swedish woman) has a
 living mother over Focal’s live?
@@ -555,31 +520,11 @@ mother is alive when she gives birth), and goes monotonically to zero.
 **Answer:** What is the probability that Focal has a living mother when
 Focal turns 70 years old?
 
-**Solution:**
-
 ``` r
-# First, get vectors for a given year
-swe_surv_x <- DemoKin::swe_px[,"2010"]
-swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
-# Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = "m")
-
-swe_x$kin_summary %>% 
-  ggplot(aes(x = age_focal, y = count_living)) +
-  geom_line() +
-  labs(x = "Focal's age", y = "M1(a)") +
-  theme_bw()
+# Write your code here
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
-
-``` r
-swe_x$kin_summary$count_living[71]
-```
-
-    ## [1] 0.0538275
-
-## Exercise 3. Sandwich Generation
+## Exercise 4. Sandwich Generation
 
 The ‘Sandwich Generation’ refers to persons who are squeezed between
 frail older parents and young dependent children and are assumed to have
@@ -591,7 +536,7 @@ exercise, we consider an individual to be ‘sandwiched’ if they have at
 least one child aged ![15](https://latex.codecogs.com/png.latex?15 "15")
 or younger and a parent or parent within
 ![5](https://latex.codecogs.com/png.latex?5 "5") years of death.
-Alburez‐Gutierrez, Mason, and Zagheni(2021) defined the probability
+Alburez‐Gutierrez, Mason, and Zagheni (2021) defined the probability
 that an average woman aged ![a](https://latex.codecogs.com/png.latex?a
 "a") is ‘sandwiched’ in a stable female population as:
 
@@ -632,48 +577,9 @@ female-only population.
 **Answer:** At which age is Focal at a highest risk of finding herself
 sandwiched between young dependent children and fragile older parents?
 
-**Solution:**
-
 ``` r
-# First, get vectors for a given year
-swe_surv_x <- DemoKin::swe_px[,"2010"]
-swe_asfr_x <- DemoKin::swe_asfr[,"2010"]
-# Run kinship models
-swe_x <- kin(U = swe_surv_x, f = swe_asfr_x, time_invariant = TRUE, output_kin = "m")
-
-M1 <- swe_x$kin_summary$count_living
-
-# Implement equation: 
-
-ages <- 15:75
-  
-S <- numeric(0)
-
-for (a in ages){
-  a_minus_x <- a - 1:15
-  a_minus_x <- a_minus_x[a_minus_x > 0]
-
-  fert_risk <- 1 - prod(1 - swe_asfr_x[a_minus_x])
-
-  M1a <- M1[a]
-
-  mom_dies <- 1 - M1[a + 5]/M1[a]
-
-  Sa <- fert_risk * M1a * mom_dies
-  S <- c(S, Sa)
-}
-
-max_S <- ages[max(S) == S]
-
-data.frame(age_focal = ages, y = S) %>% 
-  ggplot(aes(x = age_focal, y = S)) +
-  geom_line() +
-  geom_vline(xintercept = max_S, colour = "red") +
-  labs(x = "Focal's age", y = "Probability of Sandwich S(a)") +
-  theme_bw()
+# Write your code here
 ```
-
-![](README_files/figure-gfm/unnamed-chunk-24-1.png)<!-- -->
 
 # 7\. Appendix
 
@@ -739,7 +645,7 @@ swe_2015$kin_full %>%
 
     ## Warning: Removed 87 row(s) containing missing values (geom_path).
 
-![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 # 8\. Session info
 
