@@ -294,20 +294,8 @@ swe_2015$kin_summary %>%
 ```
 
 A member of the population aged 15, 50, and 65yo will have experienced, on average, the death of `r loss2 %>% filter(age_focal %in% c(15, 50, 65)) %>% pull(count) %>% round(1) %>% paste(., collapse = ", ")` relatives, respectively. 
-We can decompose this by relative type:
 
-# 5. Vignette and extensions
-
-For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
-
-For a detailed description of extensions of the matrix kinship model, see:
-
-- time-invariant rates [@caswell_formal_2019],
-- multistate models [@caswell_formal_2020],
-- time-varying rates [@caswell_formal_2021], and
-- two-sex models [@caswell_formal_2022].
-
-# 6. Exercises
+# 5. Exercises
 
 **For all exercises, assume time-invariant rates at the 2010 levels in Sweden and a female-only population. All exercises can be completed using datasets included in DemoKin.**
 
@@ -402,6 +390,17 @@ Use DemoKin to compute the probability that Focal is sandwiched, $S(a)$, between
 ```{r}
 # Write your code here
 ```
+
+# 6. Vignette and extensions
+
+For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+
+For a detailed description of extensions of the matrix kinship model, see:
+
+- time-invariant rates [@caswell_formal_2019],
+- multistate models [@caswell_formal_2020],
+- time-varying rates [@caswell_formal_2021], and
+- two-sex models [@caswell_formal_2022].
 
 # 7. Appendix
 

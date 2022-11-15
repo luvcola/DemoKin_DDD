@@ -9,8 +9,8 @@ Demography Day; Nov 16 2022
   - [3. The function `kin()`](#3-the-function-kin)
   - [4. Example: kin counts in time-invariant
     populations](#4-example-kin-counts-in-time-invariant-populations)
-  - [5. Vignette and extensions](#5-vignette-and-extensions)
-  - [6. Exercises](#6-exercises)
+  - [5. Exercises](#5-exercises)
+  - [6. Vignette and extensions](#6-vignette-and-extensions)
   - [7. Appendix](#7-appendix)
   - [8. Session info](#8-session-info)
 
@@ -410,26 +410,9 @@ swe_2015$kin_summary %>%
 ![](README_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 A member of the population aged 15, 50, and 65yo will have experienced,
-on average, the death of 0.5, 1.9, 2.9 relatives, respectively. We can
-decompose this by relative type:
+on average, the death of 0.5, 1.9, 2.9 relatives, respectively.
 
-# 5\. Vignette and extensions
-
-For more details on `DemoKin`, including an extension to time
-varying-populations rates, deceased kin, and multi-state models, see
-`vignette("Reference", package = "DemoKin")`. If the vignette does not
-load, you may need to install the package as
-`devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
-
-For a detailed description of extensions of the matrix kinship model,
-see:
-
-  - time-invariant rates (Caswell 2019),
-  - multistate models (Caswell 2020),
-  - time-varying rates (Caswell and Song 2021), and
-  - two-sex models (Caswell 2022).
-
-# 6\. Exercises
+# 5\. Exercises
 
 **For all exercises, assume time-invariant rates at the 2010 levels in
 Sweden and a female-only population. All exercises can be completed
@@ -580,6 +563,22 @@ sandwiched between young dependent children and fragile older parents?
 ``` r
 # Write your code here
 ```
+
+# 6\. Vignette and extensions
+
+For more details on `DemoKin`, including an extension to time
+varying-populations rates, deceased kin, and multi-state models, see
+`vignette("Reference", package = "DemoKin")`. If the vignette does not
+load, you may need to install the package as
+`devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+
+For a detailed description of extensions of the matrix kinship model,
+see:
+
+  - time-invariant rates (Caswell 2019),
+  - multistate models (Caswell 2020),
+  - time-varying rates (Caswell and Song 2021), and
+  - two-sex models (Caswell 2022).
 
 # 7\. Appendix
 
