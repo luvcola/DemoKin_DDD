@@ -1,7 +1,7 @@
 ---
 title: "Getting started with matrix kinship models in R using DemoKin"
 author: |
-  Instructor: Sha Jiang (Stanford University)
+  Instructor: Sha Jiang (Stanford University); Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research)
 date: | 
   | For Workshop 'Kinship networks, genealogies and relatedness in structured populations' at the 8th Meeting of the Evolutionary Demography Society, March 31 2023.
   | This handout is adpated from the previous version by Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research) and Ivan Williams (University of Buenos Aires).
@@ -322,7 +322,6 @@ data(package="DemoKin")$results[1:3,3:4] %>%
   kable()
 ```
 ## 5.1. Arguments for time-varing model
-- **N** numeric. A matrix of population with rows as ages and columns as years. Coincident with `U`.
 - **pi** numeric. A matrix with distribution of childbearing with rows as ages and columns as years. Coincident with `U`.
 - **output_period** integer. Year for which to return kinship structure. Could be a vector. Should be within input data years range.
 - **output_cohort** integer. Year of birth of focal to return as output. Could be a vector. Should be within input data years range.

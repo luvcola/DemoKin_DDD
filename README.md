@@ -1,6 +1,7 @@
 Getting started with matrix kinship models in R using DemoKin
 ================
-Instructor: Sha Jiang (Stanford University)
+Instructor: Sha Jiang (Stanford University); Diego Alburez-Gutierrez
+(Max Planck Institute for Demographic Research)
 
 For Workshop ‘Kinship networks, genealogies and relatedness in
 structured populations’ at the 8th Meeting of the Evolutionary
@@ -464,8 +465,6 @@ data(package="DemoKin")
 
 ## 5.1. Arguments for time-varing model
 
--   **N** numeric. A matrix of population with rows as ages and columns
-    as years. Coincident with `U`.
 -   **pi** numeric. A matrix with distribution of childbearing with rows
     as ages and columns as years. Coincident with `U`.
 -   **output_period** integer. Year for which to return kinship
@@ -510,7 +509,7 @@ swe_period <-
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  41.441   1.225  44.230
+    ##  43.520   1.649  46.468
 
 Now, we plot the expected number of living daughters that Focal
 throughout her life at different points in time:
@@ -577,7 +576,7 @@ system.time(
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  47.169   2.148  50.179
+    ##  47.803   2.320  50.454
 
 Now, we can show the expected number of living daughters that women born
 in different cohorts have at their disposal in any given year:
