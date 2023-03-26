@@ -1,7 +1,11 @@
 ---
 title: "Getting started with matrix kinship models in R using DemoKin"
-author: "Instructor: Diego Alburez-Gutierrez (MPIDR);" 
-date: "The Formal Demography of Kinship: Theory and Application - Dutch Demography Day; Nov 16 2022"
+author: |
+  Instructor: Sha Jiang (Stanford University)
+date: | 
+  | For Workshop 'Kinship networks, genealogies and relatedness in structured populations' at the 8th Meeting of the Evolutionary Demography Society, March 31 2023.
+  | This handout is adpated from the previous version by Diego Alburez-Gutierrez (Max Planck Institute for Demographic Research) and Ivan Williams (University of Buenos Aires).
+      
 output:
   github_document:
     pandoc_args: --webtex
@@ -32,6 +36,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(fields)
+library(knitr)
 ```
 
 # 2. Built-in data
@@ -104,7 +109,7 @@ swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 - **f** numeric. Same as U but for fertility rates.
 - **time_invariant** logical. Assume time-invariant rates. Default TRUE.
 - **output_kin** character. kin types to return: "m" for mother, "d" for daughter, ...
-
+- **birth_female** numeric. Female portion at birth. Default as 1/2.04
 ## 3.2. Relative types
 
 Relatives for the `output_kin` argument are identified by a unique code.
@@ -295,7 +300,147 @@ swe_2015$kin_summary %>%
 
 A member of the population aged 15, 50, and 65yo will have experienced, on average, the death of `r loss2 %>% filter(age_focal %in% c(15, 50, 65)) %>% pull(count) %>% round(1) %>% paste(., collapse = ", ")` relatives, respectively. 
 
-# 5. Exercises
+# 5. Example: kin counts in time-varying populations
+The real population is Sweden is not stable: individuals in it experience changing mortality and fertility rates throughout their life.
+Kinship structures in populations with changing rates can be computed following Caswell and Song [-@caswell_formal_2021].
+
+All the outputs that we showed for stable populations in the previous section are also available for non-stable populations (e.g., kin counts, deceased kin, and age distributions). 
+In this section we'll focus on outputs that are specific to time-varying kinship structures. 
+In particular, we'll show period, cohort, and age results for Sweden (Figure 5 from Caswell and Song [-@caswell_formal_2021]). 
+
+Note that, in order to arrive a this results, we use a different set of input values. 
+The objects `U_caswell_2021`, `f_caswell_2021`, and `pi_caswell_2021` were extracted by Ivan Williams from the supplementary materials provided by Caswell and Song [-@caswell_formal_2021].
+They are included in DemoKin by default. 
+
+```{r}
+data(package="DemoKin")
+```
+
+```{r, echo=FALSE}
+data(package="DemoKin")$results[1:3,3:4] %>% 
+  data.frame() %>% 
+  kable()
+```
+## 5.1. Arguments for time-varing model
+- **N** numeric. A matrix of population with rows as ages and columns as years. Coincident with `U`.
+- **pi** numeric. A matrix with distribution of childbearing with rows as ages and columns as years. Coincident with `U`.
+- **output_period** integer. Year for which to return kinship structure. Could be a vector. Should be within input data years range.
+- **output_cohort** integer. Year of birth of focal to return as output. Could be a vector. Should be within input data years range.
+
+## 5.2. Period perspective
+
+Our first illustration refers to a **period view** of kin counts. 
+Following Caswell, we consider a population that experienced the demographic rates given as input to `DemoKin` and ask:
+
+> How many living daughters would an average woman have at different ages, if we conducted a survey at a given point in time?
+In order to provide these results, we re-run the `kin()` function with the `time_invariant = FALSE` parameter and the input rates from Caswell and Song [-@caswell_formal_2021].
+Note that we provide DemoKin with a vector of the period years for which we want to obtain the kin counts (i.e., in the `output_period` argument). 
+
+```{r}
+system.time(
+swe_period <- 
+  kin(
+    U = U_caswell_2021
+    , f = f_caswell_2021
+    , time_invariant = FALSE
+    , pi = pi_caswell_2021
+    # Note that here fertility only includes female birth, 
+    # so "birth_female" is set as 1 instead of the default value 1/2.04
+    , birth_female = 1
+    # Note that we use the 'output_period' parameters as input
+    , output_period = c(1891,1951,2050,2120)
+    # We're only interested in certain kin ties
+    , output_kin = c("d","gd","m","gm","os","ys")
+)
+)
+```
+
+Now, we plot the expected number of living daughters that Focal throughout her life at different points in time:
+
+```{r}
+swe_period$kin_summary %>%
+  filter(kin == "d") %>% 
+  rename_kin() %>% 
+  mutate(year = factor(year)) %>% 
+  ggplot(aes(age_focal,count_living,color=year)) +
+  geom_line(size=1)+
+  labs(x = "Focal's age", y = "Number of living daughters") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+In a similar way, we can ask, how many grand-daughters, sisters, etc., would an average woman have at different points in time?
+
+```{r}
+swe_period$kin_summary %>%
+  rename_kin() %>% 
+  mutate(year = factor(year)) %>% 
+  ggplot(aes(age_focal,count_living,color=year)) +
+  geom_line(size=1)+
+  facet_wrap(~kin, scales = "free")+
+  labs(x = "Focal's age", y = "Living kin count") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+## 5.3. Cohort perspective
+
+We can also visualize the results from a **cohort perspective**. 
+This would be useful if we were interested in knowing the number of daughters of women in a given cohort at different points in time. 
+We could as, for example:
+
+> How many (living) daughters have women born in year 1951 accumulated by the year 2000, on average?
+For a cohort perspective, we run the `kin()` function with the `time_invariant = FALSE` parameter and with a vector of `focal_year` values:
+  
+```{r}
+system.time(
+  swe_coh <- 
+    kin(
+      U = U_caswell_2021
+      , f = f_caswell_2021
+      , pi = pi_caswell_2021
+      , time_invariant = FALSE
+      , birth_female = 1
+      # Note that we use the 'output_cohort' parameters as input
+      , output_cohort = c(1891,1931,1971,2041)
+      , output_kin = c("d","gd","m","gm","os","ys")
+    )
+)
+```
+
+Now, we can show the expected number of living daughters that women born in different cohorts have at their disposal in any given year:
+
+```{r}
+swe_coh$kin_summary %>%
+  filter(kin == "d") %>% 
+  rename_kin() %>% 
+  mutate(year = cohort + age_focal,
+         cohort = factor(cohort)) %>% 
+  ggplot(aes(year,count_living,color=cohort)) +
+  scale_y_continuous(labels = seq(0,3,.2),breaks = seq(0,3,.2))+
+  geom_line(size=1)+
+  labs(x = "Year", y = "Number of living daughters") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+We can do the same thing for other kin types to show the expected number of living kin for women born in a given cohort across time:
+
+```{r}
+swe_coh$kin_summary %>%
+  rename_kin() %>% 
+  mutate(year = cohort + age_focal,
+         cohort = factor(cohort)) %>% 
+  ggplot(aes(year,count_living,color=cohort)) +
+  scale_y_continuous(labels = seq(0,3,.2),breaks = seq(0,3,.2))+
+  geom_line(size=1)+
+  facet_wrap(~kin,scales = "free")+
+  labs(x = "Year", y = "Living kin count") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+# 6. Exercises
 
 **For all exercises, assume time-invariant rates at the 2010 levels in Sweden and a female-only population. All exercises can be completed using datasets included in DemoKin.**
 
@@ -357,7 +502,7 @@ What is the probability that Focal (an average Swedish woman) has a living mothe
 
 **Instructions**
 
-Use DemoKin to obtain $M_1(a)$, the probability of having a living mother at age $a$ in a stable population. Conditional on ego's survival, $M_1{(a)}$ can be thought of as a survival probability in a life table: it has to be equal to one when $a$ is equal to zero (the mother is alive when she gives birth), and goes monotonically to zero. 
+Use DemoKin to obtain $M_1(a)$, the probability of having a living mother at age $a$ in a stable population. Conditional on focal's survival, $M_1{(a)}$ can be thought of as a survival probability in a life table: it has to be equal to one when $a$ is equal to zero (the mother is alive when she gives birth), and goes monotonically to zero. 
 
 **Answer:** What is the probability that Focal has a living mother when Focal turns 70 years old?
 
@@ -371,7 +516,7 @@ The 'Sandwich Generation' refers to persons who are squeezed between frail older
 For this exercise, we consider an individual to be 'sandwiched' if they have at least one child aged $15$ or younger and a parent or parent within $5$ years of death. Alburez‐Gutierrez, Mason, and Zagheni [-@alburezgutierrez_sandwich_2021] defined the probability that an average woman aged $a$ is 'sandwiched' in a stable female population as:
 
 $$
-S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of ego}\\ \text{is alive when ego is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of ego}\\ \text{would die within $5$ years}}}    
+S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of focal}\\ \text{is alive when focal is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of focal}\\ \text{would die within $5$ years}}}    
 $$
 
 where 
@@ -391,7 +536,7 @@ Use DemoKin to compute the probability that Focal is sandwiched, $S(a)$, between
 # Write your code here
 ```
 
-# 6. Vignette and extensions
+# 7. Vignette and extensions
 
 For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
 
@@ -402,10 +547,10 @@ For a detailed description of extensions of the matrix kinship model, see:
 - time-varying rates [@caswell_formal_2021], and
 - two-sex models [@caswell_formal_2022].
 
-# 7. Appendix
+# 8. Appendix
 
 
-## 7.1. Mean age of living kin
+## 8.1. Mean age of living kin
 
 The output of the `DemoKin::kin()` function can also be used to easily determine the mean age Focal's relatives by kin type. 
 For simplicity, let's focus on a Focal aged 35 yo and get the mean age (and standard deviation) of her relatives in our time-invariant population. 
@@ -431,9 +576,9 @@ sda <-
 print(paste0("The mother of a 35-yo Focal woman in our time-invariant population is, on average, ", ma," years old, with a standard deviation of ", sda," years."))
 ```
 
-## 7.2. Visualizing living kin
+## 8.2. Visualizing living kin
 
-Finally, let´s visualize the living kin by type and mean age during Ego's life course:
+Finally, let´s visualize the living kin by type and mean age during Focal's life course:
 
 ```{r}
 swe_2015$kin_full %>%
@@ -455,7 +600,7 @@ swe_2015$kin_full %>%
   theme_bw()
 ```
 
-# 8. Session info
+# 9. Session info
 
 
 ```{r}

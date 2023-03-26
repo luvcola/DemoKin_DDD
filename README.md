@@ -1,22 +1,29 @@
 Getting started with matrix kinship models in R using DemoKin
 ================
-Instructor: Diego Alburez-Gutierrez (MPIDR);
-The Formal Demography of Kinship: Theory and Application - Dutch
-Demography Day; Nov 16 2022
+Instructor: Sha Jiang (Stanford University)
 
-  - [1. Installation](#1-installation)
-  - [2. Built-in data](#2-built-in-data)
-  - [3. The function `kin()`](#3-the-function-kin)
-  - [4. Example: kin counts in time-invariant
+For Workshop ‘Kinship networks, genealogies and relatedness in
+structured populations’ at the 8th Meeting of the Evolutionary
+Demography Society, March 31 2023.  
+This handout is adpated from the previous version by Diego
+Alburez-Gutierrez (Max Planck Institute for Demographic Research) and
+Ivan Williams (University of Buenos Aires).
+
+-   [1. Installation](#1-installation)
+-   [2. Built-in data](#2-built-in-data)
+-   [3. The function `kin()`](#3-the-function-kin)
+-   [4. Example: kin counts in time-invariant
     populations](#4-example-kin-counts-in-time-invariant-populations)
-  - [5. Exercises](#5-exercises)
-  - [6. Vignette and extensions](#6-vignette-and-extensions)
-  - [7. Appendix](#7-appendix)
-  - [8. Session info](#8-session-info)
+-   [5. Example: kin counts in time-varying
+    populations](#5-example-kin-counts-in-time-varying-populations)
+-   [6. Exercises](#6-exercises)
+-   [7. Vignette and extensions](#7-vignette-and-extensions)
+-   [8. Appendix](#8-appendix)
+-   [9. Session info](#9-session-info)
 
 <img src="DemoKin-Logo.png" align="right" width="200" />
 
-# 1\. Installation
+# 1. Installation
 
 Install the [development version from
 GitHub](https://github.com/IvanWilli/DemoKin) (could take \~1 minute).
@@ -38,9 +45,10 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(fields)
+library(knitr)
 ```
 
-# 2\. Built-in data
+# 2. Built-in data
 
 The `DemoKin` package includes data from Sweden as an example. The data
 comes from the [Human Mortality Database](https://www.mortality.org/)
@@ -109,7 +117,7 @@ image.plot(
 
 ![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
-# 3\. The function `kin()`
+# 3. The function `kin()`
 
 `DemoKin` can be used to compute the number and age distribution of
 Focal’s relatives under a range of assumptions, including living and
@@ -126,17 +134,23 @@ swe_asfr_2015 <- DemoKin::swe_asfr[,"2015"]
 swe_2015 <- kin(U = swe_surv_2015, f = swe_asfr_2015, time_invariant = TRUE)
 ```
 
+    ## Warning: The `stable` argument of `kin()` is deprecated as of DemoKin 0.0.0.9000.
+    ## ℹ Used time_invariant
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
+
 ## 3.1. Arguments
 
-  - **U** numeric. A vector (atomic) or matrix of survival probabilities
+-   **U** numeric. A vector (atomic) or matrix of survival probabilities
     with rows as ages (and columns as years in case of matrix).
-  - **f** numeric. Same as U but for fertility rates.
-  - **time\_invariant** logical. Assume time-invariant rates. Default
+-   **f** numeric. Same as U but for fertility rates.
+-   **time_invariant** logical. Assume time-invariant rates. Default
     TRUE.
-  - **output\_kin** character. kin types to return: “m” for mother, “d”
+-   **output_kin** character. kin types to return: “m” for mother, “d”
     for daughter, …
-
-## 3.2. Relative types
+-   **birth_female** numeric. Female portion at birth. Default as 1/2.04
+    \## 3.2. Relative types
 
 Relatives for the `output_kin` argument are identified by a unique code.
 Note that the relationship codes used in `DemoKin` differ from those in
@@ -173,15 +187,15 @@ str(swe_2015)
 ```
 
     ## List of 2
-    ##  $ kin_full   : tibble[,7] [142,814 x 7] (S3: tbl_df/tbl/data.frame)
-    ##   ..$ year     : logi [1:142814] NA NA NA NA NA NA ...
-    ##   ..$ cohort   : logi [1:142814] NA NA NA NA NA NA ...
-    ##   ..$ age_focal: int [1:142814] 0 1 2 3 4 5 6 7 8 9 ...
+    ##  $ kin_full   : tibble [142,814 × 7] (S3: tbl_df/tbl/data.frame)
     ##   ..$ kin      : chr [1:142814] "d" "d" "d" "d" ...
     ##   ..$ age_kin  : int [1:142814] 0 0 0 0 0 0 0 0 0 0 ...
+    ##   ..$ age_focal: int [1:142814] 0 1 2 3 4 5 6 7 8 9 ...
     ##   ..$ living   : num [1:142814] 0 0 0 0 0 0 0 0 0 0 ...
     ##   ..$ dead     : num [1:142814] 0 0 0 0 0 0 0 0 0 0 ...
-    ##  $ kin_summary: tibble[,10] [1,414 x 10] (S3: tbl_df/tbl/data.frame)
+    ##   ..$ cohort   : logi [1:142814] NA NA NA NA NA NA ...
+    ##   ..$ year     : logi [1:142814] NA NA NA NA NA NA ...
+    ##  $ kin_summary: tibble [1,414 × 10] (S3: tbl_df/tbl/data.frame)
     ##   ..$ age_focal     : int [1:1414] 0 0 0 0 0 0 0 0 0 0 ...
     ##   ..$ kin           : chr [1:1414] "coa" "cya" "d" "gd" ...
     ##   ..$ year          : logi [1:1414] NA NA NA NA NA NA ...
@@ -202,15 +216,15 @@ Focal, and age of kin.
 head(swe_2015$kin_full)
 ```
 
-    ## # A tibble: 6 x 7
-    ##   year  cohort age_focal kin   age_kin living  dead
-    ##   <lgl> <lgl>      <int> <chr>   <int>  <dbl> <dbl>
-    ## 1 NA    NA             0 d           0      0     0
-    ## 2 NA    NA             1 d           0      0     0
-    ## 3 NA    NA             2 d           0      0     0
-    ## 4 NA    NA             3 d           0      0     0
-    ## 5 NA    NA             4 d           0      0     0
-    ## 6 NA    NA             5 d           0      0     0
+    ## # A tibble: 6 × 7
+    ##   kin   age_kin age_focal living  dead cohort year 
+    ##   <chr>   <int>     <int>  <dbl> <dbl> <lgl>  <lgl>
+    ## 1 d           0         0      0     0 NA     NA   
+    ## 2 d           0         1      0     0 NA     NA   
+    ## 3 d           0         2      0     0 NA     NA   
+    ## 4 d           0         3      0     0 NA     NA   
+    ## 5 d           0         4      0     0 NA     NA   
+    ## 6 d           0         5      0     0 NA     NA
 
 ### `kin_summary`
 
@@ -239,7 +253,7 @@ kin_by_age_focal %>%
 
     ## [1] TRUE
 
-# 4\. Example: kin counts in time-invariant populations
+# 4. Example: kin counts in time-invariant populations
 
 Following Caswell (2019), we assume a female closed population in which
 everyone experiences the Swedish 1950 mortality and fertility rates at
@@ -319,6 +333,12 @@ swe_2015$kin_summary %>%
   theme_bw() +
   theme(legend.position = "bottom")
 ```
+
+    ## Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    ## ℹ Please use `linewidth` instead.
+    ## This warning is displayed once every 8 hours.
+    ## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    ## generated.
 
 ![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
@@ -412,7 +432,192 @@ swe_2015$kin_summary %>%
 A member of the population aged 15, 50, and 65yo will have experienced,
 on average, the death of 0.5, 1.9, 2.9 relatives, respectively.
 
-# 5\. Exercises
+# 5. Example: kin counts in time-varying populations
+
+The real population is Sweden is not stable: individuals in it
+experience changing mortality and fertility rates throughout their life.
+Kinship structures in populations with changing rates can be computed
+following Caswell and Song (2021).
+
+All the outputs that we showed for stable populations in the previous
+section are also available for non-stable populations (e.g., kin counts,
+deceased kin, and age distributions). In this section we’ll focus on
+outputs that are specific to time-varying kinship structures. In
+particular, we’ll show period, cohort, and age results for Sweden
+(Figure 5 from Caswell and Song (2021)).
+
+Note that, in order to arrive a this results, we use a different set of
+input values. The objects `U_caswell_2021`, `f_caswell_2021`, and
+`pi_caswell_2021` were extracted by Ivan Williams from the supplementary
+materials provided by Caswell and Song (2021). They are included in
+DemoKin by default.
+
+``` r
+data(package="DemoKin")
+```
+
+| Item           | Title                                                                      |
+|:---------------|:---------------------------------------------------------------------------|
+| U_caswell_2021 | Historic and projected survival ratios from Sweden used in Caswell (2021)  |
+| f_caswell_2021 | Historic and projected fertility ratios from Sweden used in Caswell (2021) |
+| fra_asfr_sex   | Fertility for France (2012) by sex in Caswell (2022).                      |
+
+## 5.1. Arguments for time-varing model
+
+-   **N** numeric. A matrix of population with rows as ages and columns
+    as years. Coincident with `U`.
+-   **pi** numeric. A matrix with distribution of childbearing with rows
+    as ages and columns as years. Coincident with `U`.
+-   **output_period** integer. Year for which to return kinship
+    structure. Could be a vector. Should be within input data years
+    range.
+-   **output_cohort** integer. Year of birth of focal to return as
+    output. Could be a vector. Should be within input data years range.
+
+## 5.2. Period perspective
+
+Our first illustration refers to a **period view** of kin counts.
+Following Caswell, we consider a population that experienced the
+demographic rates given as input to `DemoKin` and ask:
+
+> How many living daughters would an average woman have at different
+> ages, if we conducted a survey at a given point in time? In order to
+> provide these results, we re-run the `kin()` function with the
+> `time_invariant = FALSE` parameter and the input rates from Caswell
+> and Song (2021). Note that we provide DemoKin with a vector of the
+> period years for which we want to obtain the kin counts (i.e., in the
+> `output_period` argument).
+
+``` r
+system.time(
+swe_period <- 
+  kin(
+    U = U_caswell_2021
+    , f = f_caswell_2021
+    , time_invariant = FALSE
+    , pi = pi_caswell_2021
+    # Note that here fertility only includes female birth, 
+    # so "birth_female" is set as 1 instead of the default value 1/2.04
+    , birth_female = 1
+    # Note that we use the 'output_period' parameters as input
+    , output_period = c(1891,1951,2050,2120)
+    # We're only interested in certain kin ties
+    , output_kin = c("d","gd","m","gm","os","ys")
+)
+)
+```
+
+    ## Assuming stable population before 1891.
+
+    ##    user  system elapsed 
+    ##  41.441   1.225  44.230
+
+Now, we plot the expected number of living daughters that Focal
+throughout her life at different points in time:
+
+``` r
+swe_period$kin_summary %>%
+  filter(kin == "d") %>% 
+  rename_kin() %>% 
+  mutate(year = factor(year)) %>% 
+  ggplot(aes(age_focal,count_living,color=year)) +
+  geom_line(size=1)+
+  labs(x = "Focal's age", y = "Number of living daughters") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+
+In a similar way, we can ask, how many grand-daughters, sisters, etc.,
+would an average woman have at different points in time?
+
+``` r
+swe_period$kin_summary %>%
+  rename_kin() %>% 
+  mutate(year = factor(year)) %>% 
+  ggplot(aes(age_focal,count_living,color=year)) +
+  geom_line(size=1)+
+  facet_wrap(~kin, scales = "free")+
+  labs(x = "Focal's age", y = "Living kin count") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-23-1.png)<!-- -->
+
+## 5.3. Cohort perspective
+
+We can also visualize the results from a **cohort perspective**. This
+would be useful if we were interested in knowing the number of daughters
+of women in a given cohort at different points in time. We could as, for
+example:
+
+> How many (living) daughters have women born in year 1951 accumulated
+> by the year 2000, on average? For a cohort perspective, we run the
+> `kin()` function with the `time_invariant = FALSE` parameter and with
+> a vector of `focal_year` values:
+
+``` r
+system.time(
+  swe_coh <- 
+    kin(
+      U = U_caswell_2021
+      , f = f_caswell_2021
+      , pi = pi_caswell_2021
+      , time_invariant = FALSE
+      , birth_female = 1
+      # Note that we use the 'output_cohort' parameters as input
+      , output_cohort = c(1891,1931,1971,2041)
+      , output_kin = c("d","gd","m","gm","os","ys")
+    )
+)
+```
+
+    ## Assuming stable population before 1891.
+
+    ##    user  system elapsed 
+    ##  47.169   2.148  50.179
+
+Now, we can show the expected number of living daughters that women born
+in different cohorts have at their disposal in any given year:
+
+``` r
+swe_coh$kin_summary %>%
+  filter(kin == "d") %>% 
+  rename_kin() %>% 
+  mutate(year = cohort + age_focal,
+         cohort = factor(cohort)) %>% 
+  ggplot(aes(year,count_living,color=cohort)) +
+  scale_y_continuous(labels = seq(0,3,.2),breaks = seq(0,3,.2))+
+  geom_line(size=1)+
+  labs(x = "Year", y = "Number of living daughters") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-25-1.png)<!-- -->
+
+We can do the same thing for other kin types to show the expected number
+of living kin for women born in a given cohort across time:
+
+``` r
+swe_coh$kin_summary %>%
+  rename_kin() %>% 
+  mutate(year = cohort + age_focal,
+         cohort = factor(cohort)) %>% 
+  ggplot(aes(year,count_living,color=cohort)) +
+  scale_y_continuous(labels = seq(0,3,.2),breaks = seq(0,3,.2))+
+  geom_line(size=1)+
+  facet_wrap(~kin,scales = "free")+
+  labs(x = "Year", y = "Living kin count") + 
+  theme_bw() +
+  theme(legend.position = "bottom")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
+
+# 6. Exercises
 
 **For all exercises, assume time-invariant rates at the 2010 levels in
 Sweden and a female-only population. All exercises can be completed
@@ -458,9 +663,9 @@ swe_2015$kin_summary %>%
   theme_bw()
 ```
 
-    ## Warning: Removed 1 row(s) containing missing values (geom_path).
+    ## Warning: Removed 1 row containing missing values (`geom_line()`).
 
-![](README_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 **Instructions**
 
@@ -490,15 +695,15 @@ living mother over Focal’s live?
 **Instructions**
 
 Use DemoKin to obtain
-![M\_1(a)](https://latex.codecogs.com/png.latex?M_1%28a%29 "M_1(a)"),
-the probability of having a living mother at age
+![M_1(a)](https://latex.codecogs.com/png.latex?M_1%28a%29 "M_1(a)"), the
+probability of having a living mother at age
 ![a](https://latex.codecogs.com/png.latex?a "a") in a stable population.
-Conditional on ego’s survival,
-![M\_1{(a)}](https://latex.codecogs.com/png.latex?M_1%7B%28a%29%7D
-"M_1{(a)}") can be thought of as a survival probability in a life table:
-it has to be equal to one when
-![a](https://latex.codecogs.com/png.latex?a "a") is equal to zero (the
-mother is alive when she gives birth), and goes monotonically to zero.
+Conditional on focal’s survival,
+![M_1{(a)}](https://latex.codecogs.com/png.latex?M_1%7B%28a%29%7D "M_1{(a)}")
+can be thought of as a survival probability in a life table: it has to
+be equal to one when ![a](https://latex.codecogs.com/png.latex?a "a") is
+equal to zero (the mother is alive when she gives birth), and goes
+monotonically to zero.
 
 **Answer:** What is the probability that Focal has a living mother when
 Focal turns 70 years old?
@@ -520,29 +725,22 @@ least one child aged ![15](https://latex.codecogs.com/png.latex?15 "15")
 or younger and a parent or parent within
 ![5](https://latex.codecogs.com/png.latex?5 "5") years of death.
 Alburez‐Gutierrez, Mason, and Zagheni (2021) defined the probability
-that an average woman aged ![a](https://latex.codecogs.com/png.latex?a
-"a") is ‘sandwiched’ in a stable female population as:
+that an average woman aged
+![a](https://latex.codecogs.com/png.latex?a "a") is ‘sandwiched’ in a
+stable female population as:
 
-  
-![&#10;S(a) = \\underbrace{\\left(1 - \\prod\_{x=1}^{15} \[1 -
-m\_{a-x})\] \\right)}\_{\\substack{\\text{fertility risk in the}\\\\
-\\text{$15$ years preceding age 'a'}}} \\times
-\\underbrace{M\_1(a)}\_{\\substack{\\text{Prob. that mother of ego}\\\\
-\\text{is alive when ego is 'a' years old}}} \\times
-\\underbrace{\\left(1-
-\\frac{M\_1(a+5)}{M\_1(a)}\\right)}\_{\\substack{\\text{Prob. that
-mother of ego}\\\\ \\text{would die within $5$ years}}}
-&#10;](https://latex.codecogs.com/png.latex?%0AS%28a%29%20%3D%20%5Cunderbrace%7B%5Cleft%281%20-%20%5Cprod_%7Bx%3D1%7D%5E%7B15%7D%20%5B1%20-%20m_%7Ba-x%7D%29%5D%20%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7Bfertility%20risk%20in%20the%7D%5C%5C%20%5Ctext%7B%2415%24%20years%20preceding%20age%20%27a%27%7D%7D%7D%20%5Ctimes%20%5Cunderbrace%7BM_1%28a%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20ego%7D%5C%5C%20%5Ctext%7Bis%20alive%20when%20ego%20is%20%27a%27%20years%20old%7D%7D%7D%20%5Ctimes%20%20%5Cunderbrace%7B%5Cleft%281-%20%20%5Cfrac%7BM_1%28a%2B5%29%7D%7BM_1%28a%29%7D%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20ego%7D%5C%5C%20%5Ctext%7Bwould%20die%20within%20%245%24%20years%7D%7D%7D%20%20%20%20%0A
-"
-S(a) = \\underbrace{\\left(1 - \\prod_{x=1}^{15} [1 - m_{a-x})] \\right)}_{\\substack{\\text{fertility risk in the}\\\\ \\text{$15$ years preceding age 'a'}}} \\times \\underbrace{M_1(a)}_{\\substack{\\text{Prob. that mother of ego}\\\\ \\text{is alive when ego is 'a' years old}}} \\times  \\underbrace{\\left(1-  \\frac{M_1(a+5)}{M_1(a)}\\right)}_{\\substack{\\text{Prob. that mother of ego}\\\\ \\text{would die within $5$ years}}}    
-")  
+![
+S(a) = \\underbrace{\\left(1 - \\prod\_{x=1}^{15} \[1 - m\_{a-x})\] \\right)}\_{\\substack{\\text{fertility risk in the}\\\\ \\text{\$15\$ years preceding age 'a'}}} \\times \\underbrace{M_1(a)}\_{\\substack{\\text{Prob. that mother of focal}\\\\ \\text{is alive when focal is 'a' years old}}} \\times  \\underbrace{\\left(1-  \\frac{M_1(a+5)}{M_1(a)}\\right)}\_{\\substack{\\text{Prob. that mother of focal}\\\\ \\text{would die within \$5\$ years}}}    
+](https://latex.codecogs.com/png.latex?%0AS%28a%29%20%3D%20%5Cunderbrace%7B%5Cleft%281%20-%20%5Cprod_%7Bx%3D1%7D%5E%7B15%7D%20%5B1%20-%20m_%7Ba-x%7D%29%5D%20%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7Bfertility%20risk%20in%20the%7D%5C%5C%20%5Ctext%7B%2415%24%20years%20preceding%20age%20%27a%27%7D%7D%7D%20%5Ctimes%20%5Cunderbrace%7BM_1%28a%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20focal%7D%5C%5C%20%5Ctext%7Bis%20alive%20when%20focal%20is%20%27a%27%20years%20old%7D%7D%7D%20%5Ctimes%20%20%5Cunderbrace%7B%5Cleft%281-%20%20%5Cfrac%7BM_1%28a%2B5%29%7D%7BM_1%28a%29%7D%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20focal%7D%5C%5C%20%5Ctext%7Bwould%20die%20within%20%245%24%20years%7D%7D%7D%20%20%20%20%0A "
+S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of focal}\\ \text{is alive when focal is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of focal}\\ \text{would die within $5$ years}}}    
+")
 
 where
 
-  - ![m\_{a-x}](https://latex.codecogs.com/png.latex?m_%7Ba-x%7D
-    "m_{a-x}") is the fertility of women at age
+-   ![m\_{a-x}](https://latex.codecogs.com/png.latex?m_%7Ba-x%7D "m_{a-x}")
+    is the fertility of women at age
     ![a-x](https://latex.codecogs.com/png.latex?a-x "a-x"), and
-  - ![M\_1(a)](https://latex.codecogs.com/png.latex?M_1%28a%29 "M_1(a)")
+-   ![M_1(a)](https://latex.codecogs.com/png.latex?M_1%28a%29 "M_1(a)")
     is the probability of having a living mother at age
     ![a](https://latex.codecogs.com/png.latex?a "a") in a stable
     population.
@@ -564,7 +762,7 @@ sandwiched between young dependent children and fragile older parents?
 # Write your code here
 ```
 
-# 6\. Vignette and extensions
+# 7. Vignette and extensions
 
 For more details on `DemoKin`, including an extension to time
 varying-populations rates, deceased kin, and multi-state models, see
@@ -575,14 +773,14 @@ load, you may need to install the package as
 For a detailed description of extensions of the matrix kinship model,
 see:
 
-  - time-invariant rates (Caswell 2019),
-  - multistate models (Caswell 2020),
-  - time-varying rates (Caswell and Song 2021), and
-  - two-sex models (Caswell 2022).
+-   time-invariant rates (Caswell 2019),
+-   multistate models (Caswell 2020),
+-   time-varying rates (Caswell and Song 2021), and
+-   two-sex models (Caswell 2022).
 
-# 7\. Appendix
+# 8. Appendix
 
-## 7.1. Mean age of living kin
+## 8.1. Mean age of living kin
 
 The output of the `DemoKin::kin()` function can also be used to easily
 determine the mean age Focal’s relatives by kin type. For simplicity,
@@ -612,10 +810,10 @@ print(paste0("The mother of a 35-yo Focal woman in our time-invariant population
 
     ## [1] "The mother of a 35-yo Focal woman in our time-invariant population is, on average, 65.4 years old, with a standard deviation of 5.1 years."
 
-## 7.2. Visualizing living kin
+## 8.2. Visualizing living kin
 
 Finally, let´s visualize the living kin by type and mean age during
-Ego’s life course:
+Focal’s life course:
 
 ``` r
 swe_2015$kin_full %>%
@@ -640,66 +838,64 @@ swe_2015$kin_full %>%
     ## `summarise()` has grouped output by 'age_focal'. You can override using the
     ## `.groups` argument.
 
-    ## Warning: Removed 87 rows containing missing values (geom_point).
+    ## Warning: Removed 87 rows containing missing values (`geom_point()`).
 
-    ## Warning: Removed 87 row(s) containing missing values (geom_path).
+    ## Warning: Removed 87 rows containing missing values (`geom_line()`).
 
-![](README_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
 
-# 8\. Session info
+# 9. Session info
 
 ``` r
 sessionInfo()
 ```
 
-    ## R version 4.0.2 (2020-06-22)
-    ## Platform: x86_64-w64-mingw32/x64 (64-bit)
-    ## Running under: Windows 10 x64 (build 19044)
+    ## R version 4.1.3 (2022-03-10)
+    ## Platform: x86_64-apple-darwin17.0 (64-bit)
+    ## Running under: macOS Big Sur/Monterey 10.16
     ## 
     ## Matrix products: default
+    ## BLAS:   /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRblas.0.dylib
+    ## LAPACK: /Library/Frameworks/R.framework/Versions/4.1/Resources/lib/libRlapack.dylib
     ## 
     ## locale:
-    ## [1] LC_COLLATE=English_United Kingdom.1252 
-    ## [2] LC_CTYPE=English_United Kingdom.1252   
-    ## [3] LC_MONETARY=English_United Kingdom.1252
-    ## [4] LC_NUMERIC=C                           
-    ## [5] LC_TIME=English_United Kingdom.1252    
+    ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
     ## 
     ## attached base packages:
-    ## [1] grid      stats     graphics  grDevices utils     datasets  methods  
-    ## [8] base     
+    ## [1] stats     graphics  grDevices utils     datasets  methods   base     
     ## 
     ## other attached packages:
-    ## [1] fields_11.6     spam_2.6-0      dotCall64_1.0-1 ggplot2_3.3.3  
-    ## [5] tidyr_1.1.3     dplyr_1.0.5     DemoKin_1.0.0  
+    ## [1] knitr_1.42        fields_14.1       viridis_0.6.2     viridisLite_0.4.1
+    ## [5] spam_2.9-1        ggplot2_3.4.1     tidyr_1.3.0       dplyr_1.1.0      
+    ## [9] DemoKin_1.0.0    
     ## 
     ## loaded via a namespace (and not attached):
-    ##  [1] highr_0.8        pillar_1.5.1     compiler_4.0.2   tools_4.0.2     
-    ##  [5] digest_0.6.28    evaluate_0.17    lifecycle_1.0.0  tibble_3.1.0    
-    ##  [9] gtable_0.3.0     pkgconfig_2.0.3  rlang_1.0.2      igraph_1.2.6    
-    ## [13] cli_3.2.0        DBI_1.1.1        rstudioapi_0.13  yaml_2.2.1      
-    ## [17] xfun_0.21        fastmap_1.1.0    withr_2.5.0      stringr_1.4.0   
-    ## [21] knitr_1.31       maps_3.3.0       generics_0.1.0   vctrs_0.4.1     
-    ## [25] tidyselect_1.1.0 glue_1.6.2       R6_2.5.0         fansi_0.4.2     
-    ## [29] rmarkdown_2.7    farver_2.1.0     purrr_0.3.4      magrittr_2.0.1  
-    ## [33] scales_1.1.1     ellipsis_0.3.2   htmltools_0.5.2  assertthat_0.2.1
-    ## [37] colorspace_2.0-0 labeling_0.4.2   utf8_1.2.1       stringi_1.5.3   
-    ## [41] munsell_0.5.0    crayon_1.4.1
+    ##  [1] highr_0.10        pillar_1.8.1      compiler_4.1.3    prettyunits_1.1.1
+    ##  [5] progress_1.2.2    tools_4.1.3       digest_0.6.31     dotCall64_1.0-2  
+    ##  [9] evaluate_0.20     lifecycle_1.0.3   tibble_3.2.1      gtable_0.3.2     
+    ## [13] pkgconfig_2.0.3   rlang_1.1.0       igraph_1.4.1      cli_3.6.0        
+    ## [17] rstudioapi_0.14   yaml_2.3.7        xfun_0.37         fastmap_1.1.1    
+    ## [21] gridExtra_2.3     withr_2.5.0       hms_1.1.2         maps_3.4.1       
+    ## [25] generics_0.1.3    vctrs_0.6.0       grid_4.1.3        tidyselect_1.2.0 
+    ## [29] data.table_1.14.8 glue_1.6.2        R6_2.5.1          fansi_1.0.4      
+    ## [33] rmarkdown_2.20    farver_2.1.1      purrr_1.0.1       magrittr_2.0.3   
+    ## [37] ellipsis_0.3.2    scales_1.2.1      htmltools_0.5.4   colorspace_2.1-0 
+    ## [41] labeling_0.4.2    utf8_1.2.3        munsell_0.5.0     crayon_1.5.2
 
 ## References
 
-<div id="refs" class="references">
+<div id="refs" class="references csl-bib-body hanging-indent">
 
-<div id="ref-alburezgutierrez_sandwich_2021">
+<div id="ref-alburezgutierrez_sandwich_2021" class="csl-entry">
 
 Alburez‐Gutierrez, Diego, Carl Mason, and Emilio Zagheni. 2021. “The
-‘Sandwich Generation’ Revisited: Global Demographic Drivers of Care
-Time Demands.” *Population and Development Review* 47 (4): 997–1023.
+‘Sandwich Generation’ Revisited: Global Demographic Drivers of Care Time
+Demands.” *Population and Development Review* 47 (4): 997–1023.
 <https://doi.org/10.1111/padr.12436>.
 
 </div>
 
-<div id="ref-caswell_formal_2019">
+<div id="ref-caswell_formal_2019" class="csl-entry">
 
 Caswell, Hal. 2019. “The Formal Demography of Kinship: A Matrix
 Formulation.” *Demographic Research* 41 (September): 679–712.
@@ -707,7 +903,7 @@ Formulation.” *Demographic Research* 41 (September): 679–712.
 
 </div>
 
-<div id="ref-caswell_formal_2020">
+<div id="ref-caswell_formal_2020" class="csl-entry">
 
 ———. 2020. “The Formal Demography of Kinship II: Multistate Models,
 Parity, and Sibship.” *Demographic Research* 42 (June): 1097–1146.
@@ -715,7 +911,7 @@ Parity, and Sibship.” *Demographic Research* 42 (June): 1097–1146.
 
 </div>
 
-<div id="ref-caswell_formal_2022">
+<div id="ref-caswell_formal_2022" class="csl-entry">
 
 ———. 2022. “The Formal Demography of Kinship IV: Two-Sex Models and
 Their Approximations.” *Demographic Research* 47 (September): 359–96.
@@ -723,7 +919,7 @@ Their Approximations.” *Demographic Research* 47 (September): 359–96.
 
 </div>
 
-<div id="ref-caswell_formal_2021">
+<div id="ref-caswell_formal_2021" class="csl-entry">
 
 Caswell, Hal, and Xi Song. 2021. “The Formal Demography of Kinship. III.
 Kinship Dynamics with Time-Varying Demographic Rates.” *Demographic
@@ -731,7 +927,7 @@ Research* 45: 517–46.
 
 </div>
 
-<div id="ref-Keyfitz2005">
+<div id="ref-Keyfitz2005" class="csl-entry">
 
 Keyfitz, Nathan, and Hal Caswell. 2005. *Applied Mathematical
 Demography*. New York: Springer.
