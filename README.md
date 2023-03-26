@@ -509,7 +509,7 @@ swe_period <-
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  43.520   1.649  46.468
+    ##  42.231   1.279  44.462
 
 Now, we plot the expected number of living daughters that Focal
 throughout her life at different points in time:
@@ -576,7 +576,7 @@ system.time(
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  47.803   2.320  50.454
+    ##  48.201   2.378  51.241
 
 Now, we can show the expected number of living daughters that women born
 in different cohorts have at their disposal in any given year:
@@ -711,56 +711,6 @@ Focal turns 70 years old?
 # Write your code here
 ```
 
-## Exercise 4. Sandwich Generation
-
-The ‘Sandwich Generation’ refers to persons who are squeezed between
-frail older parents and young dependent children and are assumed to have
-simultaneous care responsibilities for multiple generations, potentially
-limiting their ability to provide care. In demography, ‘sandwichness’ is
-a generational process that depends on the genealogical position of an
-individual vis-a-vis their ascendants and descendants. For this
-exercise, we consider an individual to be ‘sandwiched’ if they have at
-least one child aged ![15](https://latex.codecogs.com/png.latex?15 "15")
-or younger and a parent or parent within
-![5](https://latex.codecogs.com/png.latex?5 "5") years of death.
-Alburez‐Gutierrez, Mason, and Zagheni (2021) defined the probability
-that an average woman aged
-![a](https://latex.codecogs.com/png.latex?a "a") is ‘sandwiched’ in a
-stable female population as:
-
-![
-S(a) = \\underbrace{\\left(1 - \\prod\_{x=1}^{15} \[1 - m\_{a-x})\] \\right)}\_{\\substack{\\text{fertility risk in the}\\\\ \\text{\$15\$ years preceding age 'a'}}} \\times \\underbrace{M_1(a)}\_{\\substack{\\text{Prob. that mother of focal}\\\\ \\text{is alive when focal is 'a' years old}}} \\times  \\underbrace{\\left(1-  \\frac{M_1(a+5)}{M_1(a)}\\right)}\_{\\substack{\\text{Prob. that mother of focal}\\\\ \\text{would die within \$5\$ years}}}    
-](https://latex.codecogs.com/png.latex?%0AS%28a%29%20%3D%20%5Cunderbrace%7B%5Cleft%281%20-%20%5Cprod_%7Bx%3D1%7D%5E%7B15%7D%20%5B1%20-%20m_%7Ba-x%7D%29%5D%20%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7Bfertility%20risk%20in%20the%7D%5C%5C%20%5Ctext%7B%2415%24%20years%20preceding%20age%20%27a%27%7D%7D%7D%20%5Ctimes%20%5Cunderbrace%7BM_1%28a%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20focal%7D%5C%5C%20%5Ctext%7Bis%20alive%20when%20focal%20is%20%27a%27%20years%20old%7D%7D%7D%20%5Ctimes%20%20%5Cunderbrace%7B%5Cleft%281-%20%20%5Cfrac%7BM_1%28a%2B5%29%7D%7BM_1%28a%29%7D%5Cright%29%7D_%7B%5Csubstack%7B%5Ctext%7BProb.%20that%20mother%20of%20focal%7D%5C%5C%20%5Ctext%7Bwould%20die%20within%20%245%24%20years%7D%7D%7D%20%20%20%20%0A "
-S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of focal}\\ \text{is alive when focal is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of focal}\\ \text{would die within $5$ years}}}    
-")
-
-where
-
--   ![m\_{a-x}](https://latex.codecogs.com/png.latex?m_%7Ba-x%7D "m_{a-x}")
-    is the fertility of women at age
-    ![a-x](https://latex.codecogs.com/png.latex?a-x "a-x"), and
--   ![M_1(a)](https://latex.codecogs.com/png.latex?M_1%28a%29 "M_1(a)")
-    is the probability of having a living mother at age
-    ![a](https://latex.codecogs.com/png.latex?a "a") in a stable
-    population.
-
-These estimates refer to an average woman in a female population,
-ignoring the role of offspring mortality.
-
-**Instructions**
-
-Use DemoKin to compute the probability that Focal is sandwiched,
-![S(a)](https://latex.codecogs.com/png.latex?S%28a%29 "S(a)"), between
-ages 15 and 75. Assume time-invariant rates at the 2010 levels and a
-female-only population.
-
-**Answer:** At which age is Focal at a highest risk of finding herself
-sandwiched between young dependent children and fragile older parents?
-
-``` r
-# Write your code here
-```
-
 # 7. Vignette and extensions
 
 For more details on `DemoKin`, including an extension to time
@@ -841,7 +791,7 @@ swe_2015$kin_full %>%
 
     ## Warning: Removed 87 rows containing missing values (`geom_line()`).
 
-![](README_files/figure-gfm/unnamed-chunk-35-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-34-1.png)<!-- -->
 
 # 9. Session info
 
@@ -884,15 +834,6 @@ sessionInfo()
 ## References
 
 <div id="refs" class="references csl-bib-body hanging-indent">
-
-<div id="ref-alburezgutierrez_sandwich_2021" class="csl-entry">
-
-Alburez‐Gutierrez, Diego, Carl Mason, and Emilio Zagheni. 2021. “The
-‘Sandwich Generation’ Revisited: Global Demographic Drivers of Care Time
-Demands.” *Population and Development Review* 47 (4): 997–1023.
-<https://doi.org/10.1111/padr.12436>.
-
-</div>
 
 <div id="ref-caswell_formal_2019" class="csl-entry">
 

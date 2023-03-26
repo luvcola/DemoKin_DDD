@@ -509,32 +509,6 @@ Use DemoKin to obtain $M_1(a)$, the probability of having a living mother at age
 # Write your code here
 ```
 
-## Exercise 4. Sandwich Generation
-
-The 'Sandwich Generation' refers to persons who are squeezed between frail older parents and young dependent children and are assumed to have simultaneous care responsibilities for multiple generations, potentially limiting their ability to provide care. In demography, 'sandwichness' is a generational process that depends on the genealogical position of an individual vis-a-vis their ascendants and descendants.
-For this exercise, we consider an individual to be 'sandwiched' if they have at least one child aged $15$ or younger and a parent or parent within $5$ years of death. Alburez‐Gutierrez, Mason, and Zagheni [-@alburezgutierrez_sandwich_2021] defined the probability that an average woman aged $a$ is 'sandwiched' in a stable female population as:
-
-$$
-S(a) = \underbrace{\left(1 - \prod_{x=1}^{15} [1 - m_{a-x})] \right)}_{\substack{\text{fertility risk in the}\\ \text{$15$ years preceding age 'a'}}} \times \underbrace{M_1(a)}_{\substack{\text{Prob. that mother of focal}\\ \text{is alive when focal is 'a' years old}}} \times  \underbrace{\left(1-  \frac{M_1(a+5)}{M_1(a)}\right)}_{\substack{\text{Prob. that mother of focal}\\ \text{would die within $5$ years}}}    
-$$
-
-where 
-
-- $m_{a-x}$ is the fertility of women at age $a-x$, and
-- $M_1(a)$ is the probability of having a living mother at age $a$ in a stable population. 
-
-These estimates refer to an average woman in a female population, ignoring the role of offspring mortality.
-
-**Instructions**
-
-Use DemoKin to compute the probability that Focal is sandwiched, $S(a)$, between ages 15 and 75. Assume time-invariant rates at the 2010 levels and a female-only population.
-
-**Answer:** At which age is Focal at a highest risk of finding herself sandwiched between young dependent children and fragile older parents?
-
-```{r}
-# Write your code here
-```
-
 # 7. Vignette and extensions
 
 For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
