@@ -511,7 +511,7 @@ Use DemoKin to obtain $M_1(a)$, the probability of having a living mother at age
 
 # 7. Vignette and extensions
 
-For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference", package = "DemoKin")`. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
+For more details on `DemoKin`, including an extension to time varying-populations rates, deceased kin, and multi-state models, see `vignette("Reference_OneSex", package = "DemoKin")` for one-sex model and `vignette("Reference_TwoSex", package = "DemoKin")` for two-sex model. If the vignette does not load, you may need to install the package as `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
 
 For a detailed description of extensions of the matrix kinship model, see:
 

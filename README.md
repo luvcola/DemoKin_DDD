@@ -509,7 +509,7 @@ swe_period <-
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  42.231   1.279  44.462
+    ##  53.059   2.789  62.712
 
 Now, we plot the expected number of living daughters that Focal
 throughout her life at different points in time:
@@ -576,7 +576,7 @@ system.time(
     ## Assuming stable population before 1891.
 
     ##    user  system elapsed 
-    ##  48.201   2.378  51.241
+    ##  59.716   2.943  64.962
 
 Now, we can show the expected number of living daughters that women born
 in different cohorts have at their disposal in any given year:
@@ -715,8 +715,10 @@ Focal turns 70 years old?
 
 For more details on `DemoKin`, including an extension to time
 varying-populations rates, deceased kin, and multi-state models, see
-`vignette("Reference", package = "DemoKin")`. If the vignette does not
-load, you may need to install the package as
+`vignette("Reference_OneSex", package = "DemoKin")` for one-sex model
+and `vignette("Reference_TwoSex", package = "DemoKin")` for two-sex
+model. If the vignette does not load, you may need to install the
+package as
 `devtools::install_github("IvanWilli/DemoKin", build_vignettes = TRUE)`.
 
 For a detailed description of extensions of the matrix kinship model,
